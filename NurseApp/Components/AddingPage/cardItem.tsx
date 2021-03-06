@@ -12,9 +12,9 @@ export const CardItem = ({name, acuity, room}: ICardItem) => {
   return (
     <Card>
       <Row>
-        <TextBig>name</TextBig>
-        {acuity && <TextSmall>acuity</TextSmall>}
-        {room && <TextSmall>room</TextSmall>}
+        <TextBig>{name}</TextBig>
+        {acuity && <TextSmall>{acuity}</TextSmall>}
+        {room && <TextSmall>{room}</TextSmall>}
       </Row>
     </Card>
   );

@@ -13,6 +13,7 @@ export const TextBig = (props: {children: React.ReactNode}) => {
 export const TextSmall = (props: {children: React.ReactNode}) => {
   return <View style={[sh.text, sh.card]}>{props.children}</View>;
 };
+export const Spacer = () => <View style={{flexGrow: 3}} />;
 
 export const colors = {
   darker: '#696969',
@@ -27,10 +28,10 @@ const sh = StyleSheet.create({
     justifyContent: 'space-between',
   },
   card: {
-    borderTopLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    borderTopRightRadius: 5,
-    borderBottomLeftRadius: 5,
+    borderTopLeftRadius: 5,
+    borderBottomRightRadius: 5,
+    borderTopRightRadius: 30,
+    borderBottomLeftRadius: 30,
     borderWidth: 20,
     borderColor: colors.darker,
 
