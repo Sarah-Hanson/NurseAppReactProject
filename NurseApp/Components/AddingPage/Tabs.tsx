@@ -7,7 +7,7 @@ interface ITab {
   tabComponent: any;
 }
 
-export const Tabs = (tabs: ITab[]) => {
+export const Tabs = ({tabs}: {tabs: ITab[]}) => {
   const [active, setActive] = useState(0);
 
   function renderActiveComponent() {

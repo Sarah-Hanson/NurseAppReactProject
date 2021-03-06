@@ -1,26 +1,20 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
-
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Tabs} from './Components/AddingPage/Tabs';
+import {MutableCardList} from './Components/AddingPage/mutableCardList';
 
 const App = () => {
+  const items = ['Item', 'Item', 'Item', 'Item'];
   return (
-      <></>
+    <Tabs
+      tabs={[
+        {name: 'Nurses', tabComponent: <MutableCardList initialList={items} />},
+        {
+          name: 'Patients',
+          tabComponent: <MutableCardList initialList={items} />,
+        },
+      ]}
+    />
   );
 };
-
 
 export default App;
