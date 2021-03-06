@@ -1,6 +1,12 @@
 import {StyleSheet, View} from 'react-native';
 import React from 'react';
 
+export interface ICardItem {
+  name: string;
+  acuity?: number;
+  room?: string;
+}
+
 export const Row = (props: {children: React.ReactNode}) => {
   return <View style={sh.row}>{props.children}</View>;
 };

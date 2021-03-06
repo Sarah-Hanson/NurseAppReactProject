@@ -1,21 +1,20 @@
 import React from 'react';
 import {Text} from 'react-native';
-import {Card, Row, TextBig, TextSmall} from '../Common/common';
+import {Card, ICardItem, Row, TextBig, TextSmall} from '../Common/common';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-interface ICardItem {
-  name: string;
-  acuity?: number;
-  room?: string;
-}
-
-export const CardItem = ({name, acuity, room}: ICardItem) => {
+export const CardItem = (contents: any) => {
   return (
     <Card>
       <Row>
-        <TextBig>{name}</TextBig>
-        {acuity && <TextSmall>{acuity}</TextSmall>}
-        {room && <TextSmall>{room}</TextSmall>}
+        <TextBig>{contents.name}</TextBig>
+        {contents.acuity && <TextSmall>{contents.acuity}</TextSmall>}
+        {contents.room && <TextSmall>{contents.room}</TextSmall>}
       </Row>
     </Card>
   );
 };
+
+const GarbageIcon = ({onPress}: {onPress(): void}) => (
+  <Icon name="rocket" size={30} color="#900" />
+);
