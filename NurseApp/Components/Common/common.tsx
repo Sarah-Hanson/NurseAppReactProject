@@ -1,10 +1,11 @@
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 import React from 'react';
 
 export interface ICardItem {
   name: string;
   acuity?: number;
   room?: string;
+  id: string;
 }
 
 export const Row = (props: {children: React.ReactNode}) => {
@@ -13,13 +14,19 @@ export const Row = (props: {children: React.ReactNode}) => {
 export const Card = (props: {children: React.ReactNode}) => {
   return <View style={sh.card}>{props.children}</View>;
 };
-export const TextBig = (props: {children: React.ReactNode}) => {
-  return <View style={[sh.text, sh.card]}>{props.children}</View>;
+export const TextBig = ({text}: {text: string}) => {
+  return <Text style={[sh.text, sh.big]}>{text}</Text>;
 };
-export const TextSmall = (props: {children: React.ReactNode}) => {
-  return <View style={[sh.text, sh.card]}>{props.children}</View>;
+export const TextSmall = ({text}: {text: string}) => {
+  return <Text style={[sh.text, sh.small]}>{text}</Text>;
 };
-export const Spacer = () => <View style={{flexGrow: 3}} />;
+export const TextAdd = ({text}: {text: string}) => {
+  return <Text style={[sh.text, sh.big, sh.add]}>{text}</Text>;
+};
+export const TextDel = ({text}: {text: string}) => {
+  return <Text style={[sh.text, sh.big, sh.del]}>{text}</Text>;
+};
+export const Spacer = () => <View style={{flexGrow: 1}} />;
 
 export const colors = {
   darker: '#696969',
@@ -32,19 +39,24 @@ const sh = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'stretch',
   },
   card: {
     borderTopLeftRadius: 5,
     borderBottomRightRadius: 5,
     borderTopRightRadius: 30,
     borderBottomLeftRadius: 30,
-    borderWidth: 20,
+    borderWidth: 5,
     borderColor: colors.darker,
+
+    marginVertical: '2%',
+    paddingVertical: '2%',
 
     flexDirection: 'column',
     alignItems: 'center',
   },
   big: {
+    marginHorizontal: '2%',
     fontSize: 20,
     alignSelf: 'center',
   },
@@ -52,7 +64,14 @@ const sh = StyleSheet.create({
     fontSize: 15,
     alignSelf: 'center',
   },
+  add: {
+    color: colors.green,
+  },
+  del: {
+    color: colors.red,
+  },
   text: {
-    paddingHorizontal: '3%',
+    marginHorizontal: '2%',
+    marginVertical: '1%',
   },
 });

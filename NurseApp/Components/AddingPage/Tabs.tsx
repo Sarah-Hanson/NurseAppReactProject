@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
-import {Row, TextBig, Spacer} from '../Common/common';
-import {TouchableOpacity} from 'react-native';
+import {Row, TextBig} from '../Common/common';
+import {TouchableOpacity, Text} from 'react-native';
 
 interface ITab {
   name: string;
@@ -32,6 +32,6 @@ export const Tabs = ({tabs}: {tabs: ITab[]}) => {
 
 export const Tab = ({name, onPress}: {name: string; onPress(): void}) => (
   <TouchableOpacity onPress={onPress}>
-    <TextBig>{name}</TextBig>
+    <TextBig text={name} />
   </TouchableOpacity>
 );
