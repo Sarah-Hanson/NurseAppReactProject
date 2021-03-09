@@ -63,10 +63,11 @@ const calculateMaxDisparity = (nurses: INurse[]) => {
   return max - min;
 };
 
-const score = (result: INurse[]): number =>
-  scorePreferences(result, []) * preferenceMultiplier -
+const score = (result: INurse[], preferences: IPreference[]): number =>
+  scorePreferences(result, preferences) * preferenceMultiplier -
   scoreAcuity(result) * disparityMultiplier -
   scoreDistance(result) * distanceMultiplier;
+
 const scoreAcuity = (result: INurse[]): number => calculateMaxDisparity(result);
 const scorePreferences = (
   result: INurse[],
@@ -94,12 +95,15 @@ const scoreDistance = (result: INurse[]): number => {
   return totalDistance;
 };
 
-const calculateBestScore = (results: INurse[][]) => {
+const calculateBestScore = (
+  results: INurse[][],
+  preferences: IPreference[],
+) => {
   let bestScore = Number.MIN_SAFE_INTEGER;
   let winningResult: INurse[] = [];
 
   for (let result of results) {
-    const resultScore = score(result);
+    const resultScore = score(result, preferences);
     if (resultScore > bestScore) {
       bestScore = resultScore;
       winningResult = result;
@@ -139,10 +143,12 @@ const permute = (input: IInput): IResult => {
 export const assign = ({
   nurses,
   patients,
+  preferences,
 }: {
   nurses: {name: string}[];
   patients: IPatient[];
+  preferences: IPreference[];
 }): INurse[] => {
   let results = permute({nurses: convertNurses(nurses), patients: patients});
-  return calculateBestScore(results.solutions);
+  return calculateBestScore(results.solutions, preferences);
 };
