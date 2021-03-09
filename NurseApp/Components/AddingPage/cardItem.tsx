@@ -11,7 +11,15 @@ import {
 //import Icon from 'react-native-vector-icons/FontAwesome';
 import {TouchableOpacity} from 'react-native';
 
-export const CardItem = ({item, onRm}: {item: ICardItem; onRm(): void}) => {
+export const CardItem = ({
+  item,
+  index,
+  onPress,
+}: {
+  item: ICardItem;
+  index: number;
+  onPress(index: number): void;
+}) => {
   return (
     <Card>
       <Row>
@@ -20,14 +28,20 @@ export const CardItem = ({item, onRm}: {item: ICardItem; onRm(): void}) => {
         {item.acuity ? <TextSmall text={'Acuity:' + item.acuity} /> : null}
         {item.room ? <TextSmall text={item.room} /> : null}
         {item.acuity ? null : <Spacer />}
-        <GarbageIcon onRm={() => onRm} />
+        <GarbageIcon index={index} onPress={onPress} />
       </Row>
     </Card>
   );
 };
 
-const GarbageIcon = ({onRm}: {onRm(): void}) => (
-  <TouchableOpacity onPress={() => onRm}>
+const GarbageIcon = ({
+  onPress,
+  index,
+}: {
+  onPress(index: number): void;
+  index: number;
+}) => (
+  <TouchableOpacity onPress={() => onPress(index)}>
     <TextDel text={'DEL'} />
   </TouchableOpacity>
 );

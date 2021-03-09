@@ -8,20 +8,22 @@ export const MutableCardList = ({initialList}: {initialList: any[]}) => {
   const [list, setList] = useState<ICardItem[]>(initialList);
 
   const rmItem = (index: number) => {
-    console.warn('rm' + index);
-    list.splice(index);
-    setList(list);
+    list.splice(index, 1);
+    const newList = [...list]; //force re-render since just mutating doesn't get picked up
+    setList(newList);
   };
-  const addItem = (item: ICardItem) => setList(list.concat(item));
+  const addItem = (item: ICardItem) => {
+    setList(list.concat(item));
+  };
 
   return (
     <View style={{width: '90%', padding: '5%'}}>
       <ScrollView>
         {list.map((item, index) => (
-          <CardItem key={item.id} item={item} onRm={() => rmItem(index)} />
+          <CardItem key={item.id} item={item} index={index} onPress={rmItem} />
         ))}
       </ScrollView>
-      <AddItem isPatient={!!list[0].room} onPress={() => addItem} />
+      <AddItem isPatient={list[0].room ? true : false} onPress={addItem} />
     </View>
   );
 };

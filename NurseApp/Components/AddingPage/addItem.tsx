@@ -6,18 +6,18 @@ import {
   TextAdd,
   TextSmall,
   colors,
+  ICardItem,
 } from '../Common/common';
 import React, {useState} from 'react';
 import {StyleSheet, TextInput, TouchableOpacity} from 'react-native';
-
-class onPress {}
+import {nanoid} from 'nanoid';
 
 export const AddItem = ({
   isPatient,
   onPress,
 }: {
   isPatient: boolean;
-  onPress(): void;
+  onPress(item: ICardItem): void;
 }) => {
   const [name, onChangeName] = useState('Name');
   const [acuity, onChangeAcuity] = useState(isPatient ? 'Acuity' : undefined);
@@ -25,11 +25,10 @@ export const AddItem = ({
 
   return (
     <Card>
-      <TextBig text={'Add '.concat(isPatient ? 'Nurse' : 'Patient')} />
+      <TextBig text={'Add '.concat(isPatient ? 'Patient' : 'Nurse')} />
       <Row>
         <TextInput
           style={[{marginLeft: '4%'}, sh.input]}
-          placeholder={name}
           onChangeText={(name) => onChangeName(name)}
         />
 
@@ -38,7 +37,6 @@ export const AddItem = ({
             <Spacer />
             <TextInput
               style={[{marginRight: '2%'}, sh.input]}
-              placeholder={acuity}
               onChangeText={(acuity) => onChangeAcuity(acuity)}
             />
           </>
@@ -48,12 +46,19 @@ export const AddItem = ({
         {isPatient ? (
           <TextInput
             style={[{marginLeft: '4%'}, sh.input]}
-            placeholder={room}
             onChangeText={(room) => onChangeRoom(room)}
           />
         ) : null}
         <Spacer />
-        <TouchableOpacity onPress={() => onPress()}>
+        <TouchableOpacity
+          onPress={() =>
+            onPress({
+              name: name,
+              room: room,
+              acuity: acuity ? parseInt(acuity) : undefined,
+              id: nanoid(),
+            })
+          }>
           <TextAdd text={'Add'} />
         </TouchableOpacity>
       </Row>
