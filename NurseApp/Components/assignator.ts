@@ -31,7 +31,7 @@ interface IInput {
   nurses: INurse[];
   patients: IPatient[];
 }
-
+// Adds a couple fields to the front end nurse -> logic side nurse conversion
 const convertNurses = (nurses: {name: string}[]): INurse[] => {
   return nurses.map(
     (nurse): INurse => {
@@ -42,6 +42,7 @@ const convertNurses = (nurses: {name: string}[]): INurse[] => {
     },
   );
 };
+
 const getNurseAcuity = (nurse: INurse) =>
   nurse.patients
     .map((patient) => patient.acuity)
@@ -63,11 +64,11 @@ const calculateMaxDisparity = (nurses: INurse[]) => {
   return max - min;
 };
 
+// Methods that score result sets based on various criteria, multipliers for criteria weight at top of file
 const score = (result: INurse[], preferences: IPreference[]): number =>
   scorePreferences(result, preferences) * preferenceMultiplier -
   scoreAcuity(result) * disparityMultiplier -
   scoreDistance(result) * distanceMultiplier;
-
 const scoreAcuity = (result: INurse[]): number => calculateMaxDisparity(result);
 const scorePreferences = (
   result: INurse[],
@@ -112,6 +113,7 @@ const calculateBestScore = (
   return winningResult;
 };
 
+// Copy Methods to get pass by value instead of pass by reference
 const newInput = (input: IInput): IInput => {
   return {nurses: [...input.nurses], patients: [...input.patients]};
 };
@@ -123,6 +125,8 @@ const newResult = (result: IResult, oldResult: IResult): IResult => {
   };
 };
 
+// The main meat, get all possible permutations of results that fit into a given range of
+// expected criteria defined at the top of file
 const permute = (input: IInput): IResult => {
   let result: IResult = {final: false, solutions: [], totalOps: 0};
   let disparity = calculateMaxDisparity(input.nurses);
@@ -140,6 +144,7 @@ const permute = (input: IInput): IResult => {
   return result;
 };
 
+// converts front-side data to logic-side format and runs permute, then scores returned values and returns the winner
 export const assign = ({
   nurses,
   patients,
