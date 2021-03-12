@@ -9,9 +9,9 @@ export const MutableCardList = ({
   addComponent: any;
 }) => {
   return (
-    <View style={{width: '90%', padding: '5%'}}>
+    <View style={{height: '95%', width: '90%', padding: '5%'}}>
       {addComponent}
       <ScrollView>{items}</ScrollView>
     </View>
   );
-};
+}
