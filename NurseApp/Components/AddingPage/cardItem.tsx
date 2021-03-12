@@ -1,33 +1,20 @@
 import React from 'react';
-import {
-  Card,
-  ICardItem,
-  Row,
-  Spacer,
-  TextBig,
-  TextDel,
-  TextSmall,
-} from '../Common/common';
-//import Icon from 'react-native-vector-icons/FontAwesome';
+import {Card, Row, TextDel} from '../Common/common';
 import {TouchableOpacity} from 'react-native';
 
 export const CardItem = ({
-  item,
   index,
   onPress,
+  children,
 }: {
-  item: ICardItem;
   index: number;
   onPress(index: number): void;
+  children: any;
 }) => {
   return (
     <Card>
       <Row>
-        <TextBig text={item.name} />
-        {item.acuity ? <Spacer /> : null}
-        {item.acuity ? <TextSmall text={'Acuity:' + item.acuity} /> : null}
-        {item.room ? <TextSmall text={item.room} /> : null}
-        {item.acuity ? null : <Spacer />}
+        {children}
         <GarbageIcon index={index} onPress={onPress} />
       </Row>
     </Card>

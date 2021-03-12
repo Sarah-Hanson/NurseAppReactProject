@@ -12,47 +12,50 @@ import React, {useState} from 'react';
 import {StyleSheet, TextInput, TouchableOpacity} from 'react-native';
 import {nanoid} from 'nanoid';
 
-export const AddItem = ({
-  isPatient,
-  onPress,
+export const AddPatient = ({
+  list,
+  setList,
 }: {
-  isPatient: boolean;
-  onPress(item: ICardItem): void;
+  list: any[];
+  setList(list: any[]): void;
 }) => {
   const [name, onChangeName] = useState('Name');
-  const [acuity, onChangeAcuity] = useState(isPatient ? 'Acuity' : undefined);
-  const [room, onChangeRoom] = useState(isPatient ? 'Room' : undefined);
+  const [acuity, onChangeAcuity] = useState('Acuity');
+  const [room, onChangeRoom] = useState('Room');
+
+  const addItem = (item: any) => {
+    setList(list.concat(item));
+  };
 
   return (
     <Card>
-      <TextBig text={'Add '.concat(isPatient ? 'Patient' : 'Nurse')} />
+      <TextBig text={'Add Patient'} />
       <Row>
         <TextInput
+          value={name}
           style={[{marginLeft: '4%'}, sh.input]}
           onChangeText={(name) => onChangeName(name)}
+          placeholder={'name'}
         />
-
-        {isPatient ? (
-          <>
-            <Spacer />
-            <TextInput
-              style={[{marginRight: '2%'}, sh.input]}
-              onChangeText={(acuity) => onChangeAcuity(acuity)}
-            />
-          </>
-        ) : null}
+        <Spacer />
+        <TextInput
+          value={acuity}
+          style={[{marginRight: '2%'}, sh.input]}
+          onChangeText={(acuity) => onChangeAcuity(acuity)}
+          placeholder={'acuity'}
+        />
       </Row>
       <Row>
-        {isPatient ? (
-          <TextInput
-            style={[{marginLeft: '4%'}, sh.input]}
-            onChangeText={(room) => onChangeRoom(room)}
-          />
-        ) : null}
+        <TextInput
+          value={room}
+          style={[{marginLeft: '4%'}, sh.input]}
+          onChangeText={(room) => onChangeRoom(room)}
+          placeholder={'room'}
+        />
         <Spacer />
         <TouchableOpacity
           onPress={() =>
-            onPress({
+            addItem({
               name: name,
               room: room,
               acuity: acuity ? parseInt(acuity) : undefined,
