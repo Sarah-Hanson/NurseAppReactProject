@@ -88,7 +88,7 @@ export const AddingPage = ({
                 </CardItem>
               ))}
               addComponent={
-                <AddPreference list={preferences} setList={setPreference} />
+                <AddPreference list={preferenceList} setList={setPreference} />
               }
             />
           ),
