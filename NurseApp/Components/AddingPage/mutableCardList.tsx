@@ -23,7 +23,7 @@ export const MutableCardList = ({initialList}: {initialList: any[]}) => {
           <CardItem key={item.id} item={item} index={index} onPress={rmItem} />
         ))}
       </ScrollView>
-      <AddItem isPatient={list[0].room ? true : false} onPress={addItem} />
+      <AddItem isPatient={list.length > 0} onPress={addItem} />
     </View>
   );
 };

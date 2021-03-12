@@ -48,6 +48,12 @@ const App = () => {
               />
             ),
           },
+          {
+            name: 'Preferences',
+            tabComponent: (
+              <MutableCardList key={'Preferences'} initialList={[]} />
+            ),
+          },
         ]}
       />
     </SafeAreaView>

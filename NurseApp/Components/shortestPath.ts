@@ -11,8 +11,16 @@ interface IResult {
   distance: number;
 }
 
-const newInput = (current: IRoom, target: IRoom, visited: IRoom[]) => {
-  return {current: current, target: target, visited: [...visited]};
+const copyInput = (input: {
+  current: IRoom;
+  target: IRoom;
+  visited: IRoom[];
+}) => {
+  return {
+    current: input.current,
+    target: input.target,
+    visited: [...input.visited],
+  };
 };
 
 export const FindPathDist = (start: IRoom, target: IRoom): number => {
@@ -35,11 +43,11 @@ const PathDistance = (input: {
     let success = false;
     // Check each adjacent room for a path
     for (let adjacency of input.current.adjacency) {
-      let newInput = input; // TODO make new object method
+      let newInput = copyInput(input);
       newInput.current = adjacency.room;
       newInput.visited.push(input.current);
       let o = PathDistance(newInput);
-      // If the path is found and is shorter than current path it is the new path
+      // If the path is found and is shorter than current path it is the way
       if (o.final && o.distance < shortestDistance) {
         shortestDistance = o.distance;
         nodeDistance = adjacency.distance;
