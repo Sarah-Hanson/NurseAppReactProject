@@ -2,7 +2,7 @@ import {MutableCardList} from './mutableCardList';
 import {Tabs} from './Tabs';
 import React, {useState} from 'react';
 import {CardItem} from './cardItem';
-import {Spacer, TextBig, TextSmall} from '../Common/common';
+import {Spacer, TextBig, TextSmall} from '../common';
 import {AddPatient} from './addPatient';
 import {AddNurse} from './addNurse';
 import {AddPreference} from './addPreference';

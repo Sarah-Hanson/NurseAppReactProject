@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Row, TextBig} from '../Common/common';
+import {Row, TextBig} from '../common';
 import {TouchableOpacity, Text} from 'react-native';
 
 interface ITab {

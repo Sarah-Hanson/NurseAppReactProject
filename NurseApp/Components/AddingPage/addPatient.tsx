@@ -7,7 +7,7 @@ import {
   TextSmall,
   colors,
   ICardItem,
-} from '../Common/common';
+} from '../common';
 import React, {useState} from 'react';
 import {StyleSheet, TextInput, TouchableOpacity} from 'react-native';
 import {nanoid} from 'nanoid';

@@ -7,16 +7,16 @@ const preferenceMultiplier = 3;
 const disparityMultiplier = 2;
 const distanceMultiplier = 1;
 
-interface INurse {
+export interface INurse {
   name: string;
   patients: IPatient[];
 }
-interface IPatient {
+export interface IPatient {
   name: string;
   acuity: number;
   room: IRoom;
 }
-interface IPreference {
+export interface IPreference {
   nurse: INurse;
   patient: IPatient;
   value: number;
