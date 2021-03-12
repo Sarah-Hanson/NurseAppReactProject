@@ -14,4 +14,4 @@ export const MutableCardList = ({
       <ScrollView>{items}</ScrollView>
     </View>
   );
-}
+};
