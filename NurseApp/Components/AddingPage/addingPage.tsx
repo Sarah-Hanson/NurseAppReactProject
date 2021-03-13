@@ -12,13 +12,15 @@ export const AddingPage = ({
   patients,
   preferences,
 }: {
-  nurses: {name: string; id: string}[];
-  patients: {name: string; room: string; acuity: number; id: string}[];
-  preferences: {nurse: string; patient: string; weight: number; id: string}[];
+  nurses?: {name: string; id: string}[];
+  patients?: {name: string; room: string; acuity: number; id: string}[];
+  preferences?: {nurse: string; patient: string; weight: number; id: string}[];
 }) => {
-  const [nurseList, setNurse] = useState(nurses);
-  const [patientList, setPatient] = useState(patients);
-  const [preferenceList, setPreference] = useState(preferences);
+  const [nurseList, setNurse] = useState(nurses ? nurses : []);
+  const [patientList, setPatient] = useState(patients ? patients : []);
+  const [preferenceList, setPreference] = useState(
+    preferences ? preferences : [],
+  );
 
   const rmItem = (list: any, setList: any, index: number) => {
     list.splice(index, 1);
