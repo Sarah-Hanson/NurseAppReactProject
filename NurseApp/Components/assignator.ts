@@ -1,11 +1,14 @@
 import {FindPathDist, IRoom} from './shortestPath';
+import {makeFloorPlan} from './baseFloorPlan';
+import {cloneDeep} from 'lodash';
 
 const maxDisparity = 3; // Maximum allowable disparity for a solution
 const snipLevel = 7; //Must be greater than max patient acuity
+
 // Multipliers for scoring weights
-const preferenceMultiplier = 3;
-const disparityMultiplier = 2;
-const distanceMultiplier = 1;
+const preferenceMultiplier = 2;
+const disparityMultiplier = 0.25;
+const distanceMultiplier = 0.5;
 
 export interface INurse {
   name: string;
@@ -14,12 +17,12 @@ export interface INurse {
 export interface IPatient {
   name: string;
   acuity: number;
-  room: IRoom;
+  room: IRoom | undefined;
 }
 export interface IPreference {
-  nurse: INurse;
-  patient: IPatient;
-  value: number;
+  nurse: INurse | undefined;
+  patient: IPatient | undefined;
+  weight: number;
 }
 
 interface IResult {
@@ -30,23 +33,17 @@ interface IResult {
 interface IInput {
   nurses: INurse[];
   patients: IPatient[];
+  solutions: number;
 }
-// Adds a couple fields to the front end nurse -> logic side nurse conversion
-const convertNurses = (nurses: {name: string}[]): INurse[] => {
-  return nurses.map(
-    (nurse): INurse => {
-      return {
-        name: nurse.name,
-        patients: [],
-      };
-    },
-  );
+
+export const getNurseAcuity = (nurse: INurse) => {
+  return nurse.patients.length > 0
+    ? nurse.patients
+        .map((patient) => patient.acuity)
+        .reduce((sum, curr) => sum + curr)
+    : 0;
 };
 
-const getNurseAcuity = (nurse: INurse) =>
-  nurse.patients
-    .map((patient) => patient.acuity)
-    .reduce((sum, curr) => sum + curr);
 const calculateMaxDisparity = (nurses: INurse[]) => {
   let max = 0;
   let min = Number.MAX_SAFE_INTEGER;
@@ -66,23 +63,31 @@ const calculateMaxDisparity = (nurses: INurse[]) => {
 
 // Methods that score result sets based on various criteria, multipliers for criteria weight at top of file
 const score = (result: INurse[], preferences: IPreference[]): number =>
-  scorePreferences(result, preferences) * preferenceMultiplier -
-  scoreAcuity(result) * disparityMultiplier -
-  scoreDistance(result) * distanceMultiplier;
-const scoreAcuity = (result: INurse[]): number => calculateMaxDisparity(result);
+  scorePreferences(result, preferences) -
+  scoreAcuity(result) -
+  scoreDistance(result);
+
+const scoreAcuity = (result: INurse[]): number =>
+  calculateMaxDisparity(result) * disparityMultiplier;
+
 const scorePreferences = (
   result: INurse[],
   preferences: IPreference[],
 ): number => {
   let score = 0;
-  // @ts-ignore
   for (let preference of preferences) {
-    if (preference.nurse.patients.includes(preference.patient)) {
-      score += preference.value;
+    if (
+      preference.nurse &&
+      preference.nurse.patients.length > 0 &&
+      preference.patient &&
+      preference.nurse.patients.includes(preference.patient)
+    ) {
+      score += preference.weight;
     }
   }
-  return score;
+  return score * preferenceMultiplier;
 };
+
 const scoreDistance = (result: INurse[]): number => {
   let totalDistance = 0;
   for (let nurse of result) {
@@ -93,7 +98,7 @@ const scoreDistance = (result: INurse[]): number => {
       }
     }
   }
-  return totalDistance;
+  return totalDistance * distanceMultiplier;
 };
 
 const calculateBestScore = (
@@ -110,38 +115,94 @@ const calculateBestScore = (
       winningResult = result;
     }
   }
+
+  console.log('Winning score received', bestScore.toLocaleString(), 'points!');
   return winningResult;
 };
 
-// Copy Methods to get pass by value instead of pass by reference
 const newInput = (input: IInput): IInput => {
-  return {nurses: [...input.nurses], patients: [...input.patients]};
+  return {
+    nurses: cloneDeep(input.nurses),
+    patients: [...input.patients],
+    solutions: input.solutions,
+  };
 };
 const newResult = (result: IResult, oldResult: IResult): IResult => {
   return {
     final: result.final,
     solutions: [...result.solutions, ...oldResult.solutions],
-    totalOps: result.totalOps + 1,
+    totalOps: result.totalOps + oldResult.totalOps,
   };
 };
 
 // The main meat, get all possible permutations of results that fit into a given range of
 // expected criteria defined at the top of file
 const permute = (input: IInput): IResult => {
-  let result: IResult = {final: false, solutions: [], totalOps: 0};
+  let result: IResult = {final: false, solutions: [], totalOps: 1};
   let disparity = calculateMaxDisparity(input.nurses);
 
-  if (disparity < Math.min(snipLevel, maxDisparity))
+  if (disparity < snipLevel)
     if (input.patients.length === 0) {
-      result = {final: true, solutions: [input.nurses], totalOps: 1};
+      if (disparity < maxDisparity) {
+        result = {final: true, solutions: [input.nurses], totalOps: 1};
+      }
     } else {
       for (let i = 0; i < input.nurses.length; i++) {
         let inputCopy = newInput(input);
-        inputCopy.nurses[i].patients.push(<IPatient>inputCopy.patients.pop());
+
+        const nursePatients = inputCopy.nurses[i].patients;
+        const patient = inputCopy.patients.pop();
+        patient
+          ? nursePatients.push(patient)
+          : console.warn('Something bad happened');
         result = newResult(permute(inputCopy), result);
+        /* if (result.solutions.length > 500) {
+          break;
+        }*/
       }
     }
   return result;
+};
+
+// Adds a couple fields to the front end nurse -> logic side nurse conversion
+const convertNurses = (nurses: {name: string}[]): INurse[] => {
+  return nurses.map(
+    (nurse): INurse => ({
+      name: nurse.name,
+      patients: [],
+    }),
+  );
+};
+
+const convertPatients = (
+  patients: {name: string; acuity: number; room: string}[],
+  rooms: IRoom[],
+): IPatient[] => {
+  return patients.map(
+    ({acuity, name, room}): IPatient => ({
+      name: name,
+      acuity: acuity,
+      room: rooms.find((listRoom) => listRoom.name === room),
+    }),
+  );
+};
+
+const convertPreferences = ({
+  preferences,
+  nurses,
+  patients,
+}: {
+  preferences: {nurse: string; patient: string; weight: number}[];
+  nurses: INurse[];
+  patients: IPatient[];
+}): IPreference[] => {
+  return preferences.map(
+    ({nurse, patient, weight}): IPreference => ({
+      nurse: nurses.find((listNurse) => listNurse.name === nurse),
+      patient: patients.find((listPatient) => listPatient.name === patient),
+      weight: weight,
+    }),
+  );
 };
 
 // converts front-side data to logic-side format and runs permute, then scores returned values and returns the winner
@@ -151,9 +212,41 @@ export const assign = ({
   preferences,
 }: {
   nurses: {name: string}[];
-  patients: IPatient[];
-  preferences: IPreference[];
+  patients: {name: string; acuity: number; room: string}[];
+  preferences: {nurse: string; patient: string; weight: number}[];
 }): INurse[] => {
-  let results = permute({nurses: convertNurses(nurses), patients: patients});
-  return calculateBestScore(results.solutions, preferences);
+  const rooms = makeFloorPlan();
+  const convertedNurses = convertNurses(nurses);
+  const convertedPatients = convertPatients(patients, rooms);
+  const convertedPreferences = convertPreferences({
+    preferences: preferences,
+    nurses: convertNurses(nurses),
+    patients: convertPatients(patients, rooms),
+  });
+  console.log(
+    'Permuting Results with roughly',
+    factorial(patients.length).toLocaleString(),
+    'possible permutations',
+  );
+  const results = permute({
+    nurses: convertedNurses,
+    patients: convertedPatients,
+    solutions: 0,
+  });
+  console.log(
+    'Moving to scoring with',
+    results.solutions.length,
+    'solutions found in',
+    results.totalOps,
+    'operations',
+  );
+  return calculateBestScore(results.solutions, convertedPreferences);
+};
+
+const factorial = (n: number): number => {
+  if (n < 2) {
+    return 1;
+  } else {
+    return n * factorial(n - 1);
+  }
 };

@@ -6,7 +6,7 @@ export const makeFloorPlan = (): IRoom[] => {
 
   const makeAdjacent = (room1: number, room2: number, distance: number) => {
     rooms.get('Room' + room1).adjacency.push({
-      room: rooms.get('Room' + room2 + 1),
+      room: rooms.get('Room' + room2),
       distance: distance,
     });
   };
@@ -18,6 +18,7 @@ export const makeFloorPlan = (): IRoom[] => {
   ) => {
     const max = sideAStart + range;
     while (sideAStart < max) {
+      //console.log('A:', sideAStart, ' B:', sideBStart);
       makeAdjacent(sideAStart++, sideBStart--, dist);
     }
   };
@@ -29,7 +30,7 @@ export const makeFloorPlan = (): IRoom[] => {
   };
 
   // Making all the rooms
-  for (let i = 0; i < 29; i++) {
+  for (let i = 1; i < 30; i++) {
     rooms.set('Room' + i, {name: 'Room' + i, adjacency: []});
   }
   rooms.set('Room49', {name: 'Room49', adjacency: []});
