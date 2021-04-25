@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import { assign } from "./schedule";
 const app = express();
 let port = process.env.PORT;
-if (!port || port == "") {
+if (!port || port === "") {
   port = "8000";
 }
 
