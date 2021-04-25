@@ -8,7 +8,7 @@ import axios from 'axios';
 
 const App = () => {
   const [results, changeResults] = useState([]);
-  axios.defaults.baseURL = 'http://192.168.1.66:3430';
+  axios.defaults.baseURL = 'http://sarah-nurse-app.herokuapp.com';
   axios.defaults.headers.post['Content-Type'] = 'application/json';
   return (
     <SafeAreaView

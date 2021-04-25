@@ -6,7 +6,7 @@ import {colors, Spacer, TextBig, TextSmall} from '../common';
 import {AddPatient} from './addPatient';
 import {AddNurse} from './addNurse';
 import {AddPreference} from './addPreference';
-import {TouchableOpacity} from 'react-native';
+import {Alert, TouchableOpacity, View} from 'react-native';
 import axios from 'axios';
 
 export const AddingPage = ({
@@ -35,21 +35,29 @@ export const AddingPage = ({
   const submitList = () => {
     console.log('**Submit Pressed**');
     axios
-      .post(
-        '/schedule',
-        {
-          nurses: nurseList,
-          patients: patientList,
-          preferences: preferenceList,
-        },
-        {timeout: 300000},
-      )
+      .post('/schedule', {
+        nurses: nurseList,
+        patients: patientList,
+        preferences: preferenceList,
+      })
       .then((res) => {
-        console.log('**Calculation Finished**');
+        Alert.alert(
+          'Server called, please press second button in about 5 mins',
+        );
         console.warn(res.data);
-        changeResults(res.data);
       })
       .catch((e) => console.log('Error: ' + e.message + ' res ' + e.data));
+  };
+
+  const getList = () => {
+    axios.get('/schedule').then((res) => {
+      let results = res.data;
+      if (results !== {status: 'pending'}) {
+        changeResults(res.data);
+      } else {
+        Alert.alert('Pending Please try again later');
+      }
+    });
   };
 
   return (
@@ -127,17 +135,36 @@ export const AddingPage = ({
           },
         ]}
       />
-      <TouchableOpacity
+      <View
         style={{
-          height: '5%',
-          width: '70%',
-          backgroundColor: colors.orange,
-          borderRadius: 15,
-          justifyContent: 'center',
-        }}
-        onPress={() => submitList()}>
-        <TextBig text={'Calculate!'} />
-      </TouchableOpacity>
+          flexDirection: 'row',
+          height: '10%',
+          width: '100%',
+          justifyContent: 'space-between',
+        }}>
+        <TouchableOpacity
+          style={{
+            height: 30,
+            backgroundColor: colors.orange,
+            borderRadius: 15,
+            justifyContent: 'center',
+            marginLeft: '10%',
+          }}
+          onPress={() => submitList()}>
+          <TextBig text={'Calculate!'} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            height: 30,
+            backgroundColor: colors.orange,
+            borderRadius: 15,
+            justifyContent: 'center',
+            marginRight: '10%',
+          }}
+          onPress={() => getList()}>
+          <TextBig text={'Get Results!'} />
+        </TouchableOpacity>
+      </View>
     </>
   );
 };
