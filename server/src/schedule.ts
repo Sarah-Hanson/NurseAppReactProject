@@ -141,15 +141,11 @@ const convertNurses = (nurses: { name: string }[]): INurse[] => {
 };
 
 // converts front-side data to logic-side format and runs permute, then scores returned values and returns the winner
-export const assign = ({
-  nurses,
-  patients,
-  preferences,
-}: {
-  nurses: { name: string }[];
-  patients: { name: string; acuity: number; room: string }[];
-  preferences: { nurse: string; patient: string; weight: number }[];
-}): INurse[] => {
+export const assign = (
+  nurses: { name: string }[],
+  patients: { name: string; acuity: number; room: string }[],
+  preferences: { nurse: string; patient: string; weight: number }[]
+): INurse[] => {
   const rooms = makeFloorPlan();
   const convertedNurses = convertNurses(nurses);
   const convertedPatients = convertPatients(patients, rooms);

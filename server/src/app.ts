@@ -1,5 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
+import { assign } from "./schedule";
 const app = express();
 const port = 3430;
 
@@ -11,7 +12,8 @@ app.get("/", (req, res) => {
 
 app.post("/schedule", (req, res) => {
   const { nurses, patients, preferences } = req.body;
-  const result =
+  const result = assign(nurses, patients, preferences);
+  res.send(result);
 });
 
 app.listen(port, () => {
