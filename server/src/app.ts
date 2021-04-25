@@ -22,7 +22,6 @@ app.get("/schedule", (req, res) => {
     res.send(results);
     results = undefined;
   }
-
   res.send({ status: "pending" });
 });
 
