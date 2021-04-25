@@ -2,7 +2,10 @@ import express from "express";
 import bodyParser from "body-parser";
 import { assign } from "./schedule";
 const app = express();
-const port = 3430;
+let port = process.env.PORT;
+if (!port || port == "") {
+  port = "8000";
+}
 
 app.use(bodyParser.json());
 
