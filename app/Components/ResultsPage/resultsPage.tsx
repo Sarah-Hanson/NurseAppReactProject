@@ -1,8 +1,9 @@
 import {ScrollView, View, Text, TouchableOpacity} from 'react-native';
 import React from 'react';
-import {getNurseAcuity, INurse} from '../assignator';
 import {Card, Row, Spacer, TextBig, colors} from '../common';
 import {nanoid} from 'nanoid';
+import {INurse} from '../../../shared/types';
+import {getNurseAcuity} from '../../../shared/common';
 
 export const ResultsPage = ({
   list,
