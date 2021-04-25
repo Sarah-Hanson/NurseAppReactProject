@@ -1,6 +1,6 @@
 import { IPathResult, IRoom } from "../../shared/types";
 
-const copyInput = (input: {
+const cloneInputByValue = (input: {
   current: IRoom;
   target: IRoom;
   visited: IRoom[];
@@ -19,7 +19,7 @@ export const FindPathDist = (
   if (start === undefined || target === undefined) {
     return Number.MIN_SAFE_INTEGER;
   }
-  const o = PathDistance({ current: start, target: target, visited: [] });
+  const o = PathDistance({ current: start, target, visited: [] });
   if (o.final) return o.distance;
   else return Number.MIN_SAFE_INTEGER;
 };
@@ -38,11 +38,11 @@ const PathDistance = (input: {
     let success = false;
     // Check each adjacent room for a path
     if (input.current.adjacency.length > 0) {
-      for (let adjacency of input.current.adjacency) {
-        let newInput = copyInput(input);
+      for (const adjacency of input.current.adjacency) {
+        const newInput = cloneInputByValue(input);
         newInput.current = adjacency.room;
         newInput.visited.push(input.current);
-        let o = PathDistance(newInput);
+        const o = PathDistance(newInput);
         // If the path is found and is shorter than current path it is the way
         if (o.final && o.distance < shortestDistance) {
           shortestDistance = o.distance;
@@ -51,7 +51,7 @@ const PathDistance = (input: {
         }
       }
     }
-    //else {
+    // else {
     //   console.log('undefined adjacency');
     // }
     return { final: success, distance: shortestDistance + nodeDistance };

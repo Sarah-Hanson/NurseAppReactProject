@@ -7,6 +7,7 @@ import {AddPatient} from './addPatient';
 import {AddNurse} from './addNurse';
 import {AddPreference} from './addPreference';
 import {TouchableOpacity} from 'react-native';
+import axios from 'axios';
 
 export const AddingPage = ({
   nurses,
@@ -33,14 +34,22 @@ export const AddingPage = ({
 
   const submitList = () => {
     console.log('**Submit Pressed**');
-    // changeResults(
-    //   assign({
-    //     nurses: nurseList,
-    //     patients: patientList,
-    //     preferences: preferenceList,
-    //   }),
-    // );
-    console.log('**Calculation Finished**');
+    axios
+      .post(
+        '/schedule',
+        {
+          nurses: nurseList,
+          patients: patientList,
+          preferences: preferenceList,
+        },
+        {timeout: 300000},
+      )
+      .then((res) => {
+        console.log('**Calculation Finished**');
+        console.warn(res.data);
+        changeResults(res.data);
+      })
+      .catch((e) => console.log('Error: ' + e.message + ' res ' + e.data));
   };
 
   return (

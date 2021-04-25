@@ -4,16 +4,19 @@ import {SafeAreaView} from 'react-native';
 import {AddingPage} from './Components/AddingPage/addingPage';
 import {ResultsPage} from './Components/ResultsPage/resultsPage';
 import {generatePatients, nurses, preferences} from './testData';
+import axios from 'axios';
 
 const App = () => {
   const [results, changeResults] = useState([]);
+  axios.defaults.baseURL = 'http://192.168.1.66:3430';
+  axios.defaults.headers.post['Content-Type'] = 'application/json';
   return (
     <SafeAreaView
       style={{
         flexDirection: 'column',
         alignItems: 'center',
       }}>
-      {results.length === 0 ? (
+      {results?.length === 0 ? (
         <AddingPage
           nurses={nurses}
           patients={generatePatients(14, 1)}

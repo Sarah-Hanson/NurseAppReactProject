@@ -40,8 +40,8 @@ export const convertPatients = (
 ): IPatient[] => {
   return patients.map(
     ({ acuity, name, room }): IPatient => ({
-      name: name,
-      acuity: acuity,
+      name,
+      acuity,
       room: rooms.find((listRoom) => listRoom.name === room),
     })
   );
@@ -60,7 +60,17 @@ export const convertPreferences = ({
     ({ nurse, patient, weight }): IPreference => ({
       nurse: nurses.find((listNurse) => listNurse.name === nurse),
       patient: patients.find((listPatient) => listPatient.name === patient),
-      weight: weight,
+      weight,
+    })
+  );
+};
+
+// Adds a couple fields to the front end nurse -> logic side nurse conversion
+export const convertNurses = (nurses: { name: string }[]): INurse[] => {
+  return nurses.map(
+    (nurse): INurse => ({
+      name: nurse.name,
+      patients: [],
     })
   );
 };

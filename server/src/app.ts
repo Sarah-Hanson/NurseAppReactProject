@@ -16,6 +16,11 @@ app.post("/schedule", (req, res) => {
   res.send(result);
 });
 
+app.post("/echo", (req, res) => {
+  console.warn(JSON.stringify(req.body));
+  res.send(req.body);
+});
+
 app.listen(port, () => {
   console.log(`Server started and listening on port:${port}`);
 });

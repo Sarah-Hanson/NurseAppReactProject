@@ -3,6 +3,7 @@ import { makeFloorPlan } from "./baseFloorPlan";
 import {
   cloneInputByValue,
   cloneResultByValue,
+  convertNurses,
   convertPatients,
   convertPreferences,
   factorial,
@@ -10,15 +11,13 @@ import {
 import {
   IInput,
   INurse,
-  IPatient,
   IPreference,
-  IRoom,
   IScheduleResult,
 } from "../../shared/types";
 import { getNurseAcuity } from "../../shared/common";
 
 const maxDisparity = 3; // Maximum allowable disparity for a solution
-const snipLevel = 7; //Must be greater than max patient acuity
+const snipLevel = 7; // Must be greater than max patient acuity
 
 // Multipliers for scoring weights
 const preferenceMultiplier = 2;
@@ -29,8 +28,8 @@ const calculateMaxDisparity = (nurses: INurse[]) => {
   let max = 0;
   let min = Number.MAX_SAFE_INTEGER;
 
-  for (let nurse of nurses) {
-    let acuity = getNurseAcuity(nurse);
+  for (const nurse of nurses) {
+    const acuity = getNurseAcuity(nurse);
 
     if (getNurseAcuity(nurse) > max) {
       max = acuity;
@@ -43,7 +42,7 @@ const calculateMaxDisparity = (nurses: INurse[]) => {
 };
 
 // Methods that score result sets based on various criteria, multipliers for criteria weight at top of file
-const score = (result: INurse[], preferences: IPreference[]): number =>
+const scoreResults = (result: INurse[], preferences: IPreference[]): number =>
   scorePreferences(result, preferences) -
   scoreAcuity(result) -
   scoreDistance(result);
@@ -56,7 +55,7 @@ const scorePreferences = (
   preferences: IPreference[]
 ): number => {
   let score = 0;
-  for (let preference of preferences) {
+  for (const preference of preferences) {
     if (
       preference.nurse &&
       preference.nurse.patients.length > 0 &&
@@ -71,10 +70,10 @@ const scorePreferences = (
 
 const scoreDistance = (result: INurse[]): number => {
   let totalDistance = 0;
-  for (let nurse of result) {
+  for (const nurse of result) {
     if (nurse.patients.length > 0) {
-      let room1 = nurse.patients[0].room;
-      for (let patient of nurse.patients) {
+      const room1 = nurse.patients[0].room;
+      for (const patient of nurse.patients) {
         totalDistance += FindPathDist(room1, patient.room);
       }
     }
@@ -89,8 +88,8 @@ const calculateBestScore = (
   let bestScore = Number.MIN_SAFE_INTEGER;
   let winningResult: INurse[] = [];
 
-  for (let result of results) {
-    const resultScore = score(result, preferences);
+  for (const result of results) {
+    const resultScore = scoreResults(result, preferences);
     if (resultScore > bestScore) {
       bestScore = resultScore;
       winningResult = result;
@@ -105,7 +104,7 @@ const calculateBestScore = (
 // expected criteria defined at the top of file
 const permute = (input: IInput): IScheduleResult => {
   let result: IScheduleResult = { final: false, solutions: [], totalOps: 1 };
-  let disparity = calculateMaxDisparity(input.nurses);
+  const disparity = calculateMaxDisparity(input.nurses);
 
   if (disparity < snipLevel)
     if (input.patients.length === 0) {
@@ -114,7 +113,7 @@ const permute = (input: IInput): IScheduleResult => {
       }
     } else {
       for (let i = 0; i < input.nurses.length; i++) {
-        let inputCopy = cloneInputByValue(input);
+        const inputCopy = cloneInputByValue(input);
 
         const nursePatients = inputCopy.nurses[i].patients;
         const patient = inputCopy.patients.pop();
@@ -130,16 +129,6 @@ const permute = (input: IInput): IScheduleResult => {
   return result;
 };
 
-// Adds a couple fields to the front end nurse -> logic side nurse conversion
-const convertNurses = (nurses: { name: string }[]): INurse[] => {
-  return nurses.map(
-    (nurse): INurse => ({
-      name: nurse.name,
-      patients: [],
-    })
-  );
-};
-
 // converts front-side data to logic-side format and runs permute, then scores returned values and returns the winner
 export const assign = (
   nurses: { name: string }[],
@@ -150,7 +139,7 @@ export const assign = (
   const convertedNurses = convertNurses(nurses);
   const convertedPatients = convertPatients(patients, rooms);
   const convertedPreferences = convertPreferences({
-    preferences: preferences,
+    preferences,
     nurses: convertNurses(nurses),
     patients: convertPatients(patients, rooms),
   });

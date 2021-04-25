@@ -457,3 +457,4 @@
 /node_modules/react-native-vector-icons/Fonts/Zocial.ttf
 /node_modules/@types/lodash/fp/__.d.ts
 /server/node_modules/
+/server/dist/

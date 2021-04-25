@@ -14,4 +14,5 @@ module.exports = {
       },
     }),
   },
+  watchFolders: ['../shared'],
 };

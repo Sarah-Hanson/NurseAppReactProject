@@ -1,24 +1,24 @@
-import {IRoom} from './shortestPath';
+import { IRoom } from "../../shared/types";
 
-//Hardcoded floor-plan since this app has a single use case at the moment
+// Hardcoded floor-plan since this app has a single use case at the moment
 export const makeFloorPlan = (): IRoom[] => {
-  let rooms = new Map();
+  const rooms = new Map();
 
   const makeAdjacent = (room1: number, room2: number, distance: number) => {
-    rooms.get('Room' + room1).adjacency.push({
-      room: rooms.get('Room' + room2),
-      distance: distance,
+    rooms.get("Room" + room1).adjacency.push({
+      room: rooms.get("Room" + room2),
+      distance,
     });
   };
   const crossHallwayLink = (
     sideAStart: number,
     sideBStart: number,
     range: number,
-    dist: number,
+    dist: number
   ) => {
     const max = sideAStart + range;
     while (sideAStart < max) {
-      //console.log('A:', sideAStart, ' B:', sideBStart);
+      // console.log('A:', sideAStart, ' B:', sideBStart);
       makeAdjacent(sideAStart++, sideBStart--, dist);
     }
   };
@@ -31,13 +31,13 @@ export const makeFloorPlan = (): IRoom[] => {
 
   // Making all the rooms
   for (let i = 1; i < 30; i++) {
-    rooms.set('Room' + i, {name: 'Room' + i, adjacency: []});
+    rooms.set("Room" + i, { name: "Room" + i, adjacency: [] });
   }
-  rooms.set('Room49', {name: 'Room49', adjacency: []});
-  rooms.set('Room50', {name: 'Room50', adjacency: []});
-  rooms.set('RoomOC', {name: 'RoomOC', adjacency: []});
+  rooms.set("Room49", { name: "Room49", adjacency: [] });
+  rooms.set("Room50", { name: "Room50", adjacency: [] });
+  rooms.set("RoomOC", { name: "RoomOC", adjacency: [] });
 
-  //Make all adjacencies
+  // Make all adjacencies
   makeRangeAdjacent(1, 9);
   makeRangeAdjacent(10, 16);
   makeRangeAdjacent(17, 23);

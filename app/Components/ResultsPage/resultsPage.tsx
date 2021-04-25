@@ -12,6 +12,7 @@ export const ResultsPage = ({
   list: INurse[];
   changeResults(i: any): any;
 }) => {
+  console.warn(list);
   return (
     <>
       <Text style={{fontSize: 30}}>Results</Text>
