@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import { assign } from "./schedule";
 const app = express();
 let port = process.env.PORT || 8000;
+let results;
 
 app.use(bodyParser.json());
 
@@ -12,8 +13,17 @@ app.get("/", (req, res) => {
 
 app.post("/schedule", (req, res) => {
   const { nurses, patients, preferences } = req.body;
-  const result = assign(nurses, patients, preferences);
-  res.send(result);
+  res.send({ status: 202 });
+  results = assign(nurses, patients, preferences);
+});
+
+app.get("/schedule", (req, res) => {
+  if (results) {
+    res.send(results);
+    results = undefined;
+  }
+
+  res.send({ status: "pending" });
 });
 
 app.post("/echo", (req, res) => {
