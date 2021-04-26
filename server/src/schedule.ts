@@ -102,7 +102,7 @@ const calculateBestScore = (
 
 // The main meat, get all possible permutations of results that fit into a given range of
 // expected criteria defined at the top of file
-const permute = (input: IInput): IScheduleResult => {
+const permute = async (input: IInput): Promise<IScheduleResult> => {
   let result: IScheduleResult = { final: false, solutions: [], totalOps: 1 };
   const disparity = calculateMaxDisparity(input.nurses);
 
@@ -120,21 +120,18 @@ const permute = (input: IInput): IScheduleResult => {
         patient
           ? nursePatients.push(patient)
           : console.warn("Something bad happened");
-        result = cloneResultByValue(permute(inputCopy), result);
-        /* if (result.solutions.length > 500) {
-                  break;
-                }*/
+        result = cloneResultByValue(await permute(inputCopy), result);
       }
     }
   return result;
 };
 
 // converts front-side data to logic-side format and runs permute, then scores returned values and returns the winner
-export const assign = (
+export const assign = async (
   nurses: { name: string }[],
   patients: { name: string; acuity: number; room: string }[],
   preferences: { nurse: string; patient: string; weight: number }[]
-): INurse[] => {
+): Promise<INurse[]> => {
   const rooms = makeFloorPlan();
   const convertedNurses = convertNurses(nurses);
   const convertedPatients = convertPatients(patients, rooms);
@@ -148,7 +145,7 @@ export const assign = (
     factorial(patients.length).toLocaleString(),
     "possible permutations"
   );
-  const results = permute({
+  const results = await permute({
     nurses: convertedNurses,
     patients: convertedPatients,
     solutions: 0,

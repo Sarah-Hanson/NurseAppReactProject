@@ -53,7 +53,6 @@ export const AddingPage = ({
     axios.get('/schedule').then((res) => {
       let results = res.data;
       if (results?.status !== 'pending') {
-        Alert.alert(results);
         changeResults(results);
       } else {
         Alert.alert('Pending Please try again later');

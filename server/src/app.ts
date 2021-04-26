@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
 app.post("/schedule", (req, res) => {
   const { nurses, patients, preferences } = req.body;
   res.send({ status: 202 });
-  results = assign(nurses, patients, preferences);
+  assign(nurses, patients, preferences).then((found) => (results = found));
 });
 
 app.get("/schedule", (req, res) => {
