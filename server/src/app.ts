@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import { assign } from "./schedule";
 const app = express();
-let port = process.env.PORT || 8000;
+const port = process.env.PORT || 8000;
 let results;
 
 app.use(bodyParser.json());
