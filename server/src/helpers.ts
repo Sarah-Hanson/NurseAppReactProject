@@ -74,3 +74,9 @@ export const convertNurses = (nurses: { name: string }[]): INurse[] => {
     })
   );
 };
+
+export const setImmediatePromise = () => {
+  return new Promise<void>((resolve) => {
+    setImmediate(() => resolve());
+  });
+};

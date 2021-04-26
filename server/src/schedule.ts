@@ -7,6 +7,7 @@ import {
   convertPatients,
   convertPreferences,
   factorial,
+  setImmediatePromise,
 } from "./helpers";
 import {
   IInput,
@@ -105,6 +106,9 @@ const calculateBestScore = (
 const permute = async (input: IInput): Promise<IScheduleResult> => {
   let result: IScheduleResult = { final: false, solutions: [], totalOps: 1 };
   const disparity = calculateMaxDisparity(input.nurses);
+
+  //Frees up the node loop to answer other things?
+  await setImmediatePromise();
 
   if (disparity < snipLevel)
     if (input.patients.length === 0) {
