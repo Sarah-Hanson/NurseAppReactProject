@@ -41,9 +41,7 @@ export const AddingPage = ({
         preferences: preferenceList,
       })
       .then((res) => {
-        Alert.alert(
-          'Server called, please press second button in about 5 mins',
-        );
+        Alert.alert('Server called, and working on the problem');
         console.warn(res.data);
       })
       .catch((e) => console.log('Error: ' + e.message + ' res ' + e.data));
