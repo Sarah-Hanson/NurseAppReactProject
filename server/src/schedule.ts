@@ -145,7 +145,7 @@ export const assign = async (
       solutions: 0,
     });
   } catch (tossedResult) {
-    results = results;
+    results = tossedResult;
   }
 
   console.log(
