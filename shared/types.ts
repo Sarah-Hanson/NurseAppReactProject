@@ -1,29 +1,34 @@
-export interface INurse {
-  name: string;
-  patients: IPatient[];
+export class Nurse {
+  constructor(public name: string, public patients: IPatient[]) {}
+
+  public getAcuity() {
+    return this.patients.length > 0
+      ? this.patients
+          .map((patient) => patient.acuity)
+          .reduce((sum, curr) => sum + curr)
+      : 0;
+  }
 }
 export interface IPatient {
-  name: string;
+  id: string;
   acuity: number;
   room: IRoom | undefined;
 }
 export interface IPreference {
-  nurse: INurse | undefined;
+  nurse: Nurse | undefined;
   patient: IPatient | undefined;
   weight: number;
 }
-
 export interface IScheduleResult {
   final: boolean;
-  solutions: INurse[][];
+  solutions: Nurse[][];
   totalOps: number;
 }
 export interface IInput {
-  nurses: INurse[];
+  nurses: Nurse[];
   patients: IPatient[];
   solutions: number;
 }
-
 export interface IRoom {
   name: string;
   adjacency: IAdjacency[];

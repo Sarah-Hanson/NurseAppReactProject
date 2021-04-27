@@ -1,6 +1,6 @@
 import {
   IInput,
-  INurse,
+  Nurse,
   IPatient,
   IPreference,
   IRoom,
@@ -40,7 +40,7 @@ export const convertPatients = (
 ): IPatient[] => {
   return patients.map(
     ({ acuity, name, room }): IPatient => ({
-      name,
+      id: name,
       acuity,
       room: rooms.find((listRoom) => listRoom.name === room),
     })
@@ -53,30 +53,42 @@ export const convertPreferences = ({
   patients,
 }: {
   preferences: { nurse: string; patient: string; weight: number }[];
-  nurses: INurse[];
+  nurses: Nurse[];
   patients: IPatient[];
 }): IPreference[] => {
   return preferences.map(
     ({ nurse, patient, weight }): IPreference => ({
       nurse: nurses.find((listNurse) => listNurse.name === nurse),
-      patient: patients.find((listPatient) => listPatient.name === patient),
+      patient: patients.find((listPatient) => listPatient.id === patient),
       weight,
     })
   );
 };
 
 // Adds a couple fields to the front end nurse -> logic side nurse conversion
-export const convertNurses = (nurses: { name: string }[]): INurse[] => {
-  return nurses.map(
-    (nurse): INurse => ({
-      name: nurse.name,
-      patients: [],
-    })
-  );
+export const convertNurses = (nurses: { name: string }[]): Nurse[] => {
+  return nurses.map((nurse): Nurse => new Nurse(nurse.name, []));
 };
 
 export const setImmediatePromise = () => {
   return new Promise<void>((resolve) => {
     setImmediate(() => resolve());
   });
+};
+
+export const calculateMaxDisparity = (nurses: Nurse[]) => {
+  let max = 0;
+  let min = Number.MAX_SAFE_INTEGER;
+
+  for (const nurse of nurses) {
+    const acuity = nurse.getAcuity();
+
+    if (nurse.getAcuity() > max) {
+      max = acuity;
+    }
+    if (acuity < min) {
+      min = acuity;
+    }
+  }
+  return max - min;
 };

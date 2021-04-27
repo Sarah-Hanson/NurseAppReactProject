@@ -2,14 +2,13 @@ import {ScrollView, View, Text, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {Card, Row, Spacer, TextBig, colors} from '../common';
 import {nanoid} from 'nanoid';
-import {INurse} from '../../../shared/types';
-import {getNurseAcuity} from '../../../shared/common';
+import {Nurse} from '../../../shared/types';
 
 export const ResultsPage = ({
   list,
   changeResults,
 }: {
-  list: INurse[];
+  list: Nurse[];
   changeResults(i: any): any;
 }) => {
   console.warn(list);
@@ -37,12 +36,12 @@ export const ResultsPage = ({
       </TouchableOpacity>
       <View style={{height: '85%', width: '90%', padding: '5%'}}>
         <ScrollView>
-          {list.map((result) => (
+          {list.map((nurse) => (
             <Card key={nanoid()}>
               <Row>
-                <TextBig text={result.name} />
+                <TextBig text={nurse.name} />
                 <Spacer />
-                <TextBig text={'Total Acuity: ' + getNurseAcuity(result)} />
+                <TextBig text={'Total Acuity: ' + nurse.getAcuity()} />
               </Row>
               <View
                 style={{
@@ -51,10 +50,10 @@ export const ResultsPage = ({
                   borderBottomColor: colors.orange,
                 }}
               />
-              {result.patients.length > 0 &&
-                result.patients.map((patient) => (
+              {nurse.patients.length > 0 &&
+                nurse.patients.map((patient) => (
                   <Row key={nanoid()}>
-                    <TextBig text={patient.name} />
+                    <TextBig text={patient.id} />
                     <Spacer />
                     <TextBig text={'Acuity: ' + patient.acuity} />
                     <Spacer />

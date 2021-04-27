@@ -1,6 +1,7 @@
 import { FindPathDist } from "./shortestPath";
 import { makeFloorPlan } from "./baseFloorPlan";
 import {
+  calculateMaxDisparity,
   cloneInputByValue,
   cloneResultByValue,
   convertNurses,
@@ -11,48 +12,31 @@ import {
 } from "./helpers";
 import {
   IInput,
-  INurse,
+  Nurse,
   IPreference,
   IScheduleResult,
 } from "../../shared/types";
-import { getNurseAcuity } from "../../shared/common";
 
 const maxDisparity = 3; // Maximum allowable disparity for a solution
 const snipLevel = 7; // Must be greater than max patient acuity
+const cutResults = 5000; // We don't need more solutions that this, so stop getting them
 
 // Multipliers for scoring weights
 const preferenceMultiplier = 2;
 const disparityMultiplier = 0.25;
 const distanceMultiplier = 0.5;
 
-const calculateMaxDisparity = (nurses: INurse[]) => {
-  let max = 0;
-  let min = Number.MAX_SAFE_INTEGER;
-
-  for (const nurse of nurses) {
-    const acuity = getNurseAcuity(nurse);
-
-    if (getNurseAcuity(nurse) > max) {
-      max = acuity;
-    }
-    if (acuity < min) {
-      min = acuity;
-    }
-  }
-  return max - min;
-};
-
 // Methods that score result sets based on various criteria, multipliers for criteria weight at top of file
-const scoreResults = (result: INurse[], preferences: IPreference[]): number =>
+const scoreResults = (result: Nurse[], preferences: IPreference[]): number =>
   scorePreferences(result, preferences) -
   scoreAcuity(result) -
   scoreDistance(result);
 
-const scoreAcuity = (result: INurse[]): number =>
+const scoreAcuity = (result: Nurse[]): number =>
   calculateMaxDisparity(result) * disparityMultiplier;
 
 const scorePreferences = (
-  result: INurse[],
+  result: Nurse[],
   preferences: IPreference[]
 ): number => {
   let score = 0;
@@ -69,7 +53,7 @@ const scorePreferences = (
   return score * preferenceMultiplier;
 };
 
-const scoreDistance = (result: INurse[]): number => {
+const scoreDistance = (result: Nurse[]): number => {
   let totalDistance = 0;
   for (const nurse of result) {
     if (nurse.patients.length > 0) {
@@ -82,12 +66,9 @@ const scoreDistance = (result: INurse[]): number => {
   return totalDistance * distanceMultiplier;
 };
 
-const calculateBestScore = (
-  results: INurse[][],
-  preferences: IPreference[]
-) => {
+const calculateBestScore = (results: Nurse[][], preferences: IPreference[]) => {
   let bestScore = Number.MIN_SAFE_INTEGER;
-  let winningResult: INurse[] = [];
+  let winningResult: Nurse[] = [];
 
   for (const result of results) {
     const resultScore = scoreResults(result, preferences);
@@ -125,6 +106,9 @@ const permute = async (input: IInput): Promise<IScheduleResult> => {
           ? nursePatients.push(patient)
           : console.warn("Something bad happened");
         result = cloneResultByValue(await permute(inputCopy), result);
+        if (result?.solutions?.length >= 2000) {
+          throw result;
+        }
       }
     }
   return result;
@@ -135,7 +119,7 @@ export const assign = async (
   nurses: { name: string }[],
   patients: { name: string; acuity: number; room: string }[],
   preferences: { nurse: string; patient: string; weight: number }[]
-): Promise<INurse[]> => {
+): Promise<Nurse[]> => {
   const rooms = makeFloorPlan();
   const convertedNurses = convertNurses(nurses);
   const convertedPatients = convertPatients(patients, rooms);
@@ -149,11 +133,17 @@ export const assign = async (
     factorial(patients.length).toLocaleString(),
     "possible permutations"
   );
-  const results = await permute({
-    nurses: convertedNurses,
-    patients: convertedPatients,
-    solutions: 0,
-  });
+  let results;
+  try {
+    results = await permute({
+      nurses: convertedNurses,
+      patients: convertedPatients,
+      solutions: 0,
+    });
+  } catch (tossedResult) {
+    results = results;
+  }
+
   console.log(
     "Moving to scoring with",
     results.solutions.length,
