@@ -8,6 +8,7 @@ import {
   convertPatients,
   convertPreferences,
   factorial,
+  getHighestAcuity,
   setImmediatePromise,
 } from "./helpers";
 import {
@@ -18,7 +19,7 @@ import {
 } from "../../shared/types";
 
 const maxDisparity = 3; // Maximum allowable disparity for a solution
-const snipLevel = 7; // Must be greater than max patient acuity
+let snipLevel; // dont go down a branch if the acuity is higher than this to prevent trying to stack every patient on one nurse
 const cutResults = 5000; // We don't need more solutions that this, so stop getting them
 
 // Multipliers for scoring weights
@@ -106,7 +107,7 @@ const permute = async (input: IInput): Promise<IScheduleResult> => {
           ? nursePatients.push(patient)
           : console.warn("Something bad happened");
         result = cloneResultByValue(await permute(inputCopy), result);
-        if (result?.solutions?.length >= 2000) {
+        if (result?.solutions?.length >= cutResults) {
           throw result;
         }
       }
@@ -120,6 +121,7 @@ export const assign = async (
   patients: { name: string; acuity: number; room: string }[],
   preferences: { nurse: string; patient: string; weight: number }[]
 ): Promise<Nurse[]> => {
+  let results;
   const rooms = makeFloorPlan();
   const convertedNurses = convertNurses(nurses);
   const convertedPatients = convertPatients(patients, rooms);
@@ -133,7 +135,9 @@ export const assign = async (
     factorial(patients.length).toLocaleString(),
     "possible permutations"
   );
-  let results;
+
+  snipLevel = getHighestAcuity(convertedPatients) + 1;
+
   try {
     results = await permute({
       nurses: convertedNurses,

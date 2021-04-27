@@ -92,3 +92,13 @@ export const calculateMaxDisparity = (nurses: Nurse[]) => {
   }
   return max - min;
 };
+
+export const getHighestAcuity = (patients: IPatient[]) => {
+  let maxAcuity = Number.MIN_SAFE_INTEGER;
+  for (const patient of patients) {
+    if (patient.acuity > maxAcuity) {
+      maxAcuity = patient.acuity;
+    }
+  }
+  return maxAcuity;
+};
