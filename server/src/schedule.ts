@@ -17,6 +17,7 @@ import {
   IPreference,
   IScheduleResult,
 } from "../../shared/types";
+import { makeSolutions } from "./makeSolutions";
 
 const maxDisparity = 3; // Maximum allowable disparity for a solution
 let snipLevel; // dont go down a branch if the acuity is higher than this to prevent trying to stack every patient on one nurse
@@ -89,7 +90,7 @@ const permute = async (input: IInput): Promise<IScheduleResult> => {
   let result: IScheduleResult = { final: false, solutions: [], totalOps: 1 };
   const disparity = calculateMaxDisparity(input.nurses);
 
-  // Frees up the node loop to answer other things?
+  // Frees up the node loop to answer other things
   await setImmediatePromise();
 
   if (disparity < snipLevel)
@@ -138,14 +139,25 @@ export const assign = async (
 
   snipLevel = getHighestAcuity(convertedPatients) + 1;
 
+  // Old recursive way to do it
+  // try {
+  //   results = await permute({
+  //     nurses: convertedNurses,
+  //     patients: convertedPatients,
+  //     solutions: 0,
+  //   });
+  // } catch (tossedResult) {
+  //   results = tossedResult;
+  // }
+
   try {
-    results = await permute({
-      nurses: convertedNurses,
-      patients: convertedPatients,
-      solutions: 0,
+    results = await makeSolutions(convertedNurses, convertedPatients, {
+      snipLevel,
+      maxDisparity,
+      cutResults,
     });
-  } catch (tossedResult) {
-    results = tossedResult;
+  } catch (err) {
+    console.warn(err.message);
   }
 
   console.log(

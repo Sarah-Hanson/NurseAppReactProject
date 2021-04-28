@@ -50,7 +50,7 @@ export const ResultsPage = ({
                   borderBottomColor: colors.orange,
                 }}
               />
-              {nurse.patients.length > 0 &&
+              {nurse?.patients?.length > 0 &&
                 nurse.patients.map((patient) => (
                   <Row key={nanoid()}>
                     <TextBig text={patient.id} />
