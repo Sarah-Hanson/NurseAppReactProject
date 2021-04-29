@@ -70,7 +70,10 @@ const scoreDistance = (result: Nurse[]): number => {
   return totalDistance * distanceMultiplier;
 };
 
-const calculateBestScore = (results: Nurse[][], preferences: IPreference[]) => {
+const calculateBestScore = (
+  results: Nurse[][],
+  preferences: IPreference[]
+): Nurse[] => {
   let bestScore = Number.MIN_SAFE_INTEGER;
   let winningResult: Nurse[] = [];
 
@@ -81,7 +84,15 @@ const calculateBestScore = (results: Nurse[][], preferences: IPreference[]) => {
       winningResult = result;
     }
   }
-  console.log("Winning score received", bestScore.toLocaleString(), "points!");
+  console.log(
+    "Winning score received",
+    bestScore.toLocaleString(),
+    "points!\n winning solution acuities"
+  );
+  for (const nurse of winningResult) {
+    console.log(nurse.name, nurse.getAcuity());
+    console.log(nurse.patients.map((p) => p.acuity));
+  }
   return winningResult;
 };
 
