@@ -1,5 +1,3 @@
-// The main meat, get all possible permutations of results that fit into a given range of
-// expected criteria defined at the top of file
 import { IInput, IScheduleResult } from "../../shared/types";
 import {
   calculateMaxDisparity,
@@ -16,8 +14,7 @@ export const MakeSolutionsRecursive = async (
   let result: IScheduleResult = { final: false, solutions: [] };
   const disparity = calculateMaxDisparity(input.nurses);
 
-  // Frees up the node loop to answer other things
-  await setImmediatePromise();
+  await setImmediatePromise(); // Frees up the node loop to answer other things
 
   if (disparity < snipLevel)
     if (input.patients.length === 0) {

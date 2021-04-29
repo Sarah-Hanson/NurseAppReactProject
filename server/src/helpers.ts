@@ -101,7 +101,7 @@ export const getHighestAcuity = (patients: IPatient[]) => {
   return maxAcuity;
 };
 
-export const chunkArray = (anArray, chunkSize) => {
+export const chunkArray = (anArray, chunkSize): [][] => {
   const results = [];
 
   while (anArray.length) {
