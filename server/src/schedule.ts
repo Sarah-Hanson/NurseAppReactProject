@@ -24,14 +24,13 @@ const maxDisparity = 3; // Maximum allowable disparity for a solution
 let snipLevel; // dont go down a branch if the acuity is higher than this to prevent trying to stack every patient on one nurse
 const cutResults = 5000; // We don't need more solutions that this, so stop getting them
 
-const chunkSize = 8;
+const chunkSize = 6;
 
 // Multipliers for scoring weights
 const preferenceMultiplier = 2;
 const disparityMultiplier = 0.25;
 const distanceMultiplier = 0.5;
 
-// Methods that score result sets based on various criteria, multipliers for criteria weight at top of file
 const scoreResults = (result: Nurse[], preferences: IPreference[]): number =>
   scorePreferences(result, preferences) -
   scoreAcuity(result) -
@@ -141,7 +140,11 @@ export const assign = async (
     "possible permutations"
   );
 
-  // New sub-problem recursive solution
+  // New sub-problem recursive solution, break into smaller solvable blocks and then run those blocks one after another
+  convertedPatients.sort((a, b) =>
+    a.acuity === b.acuity ? 0 : a.acuity < b.acuity ? 1 : -1
+  );
+  console.warn(convertedPatients.map((p) => p.acuity));
   const subProblems = chunkArray(convertedPatients, chunkSize);
   let bestSolution = convertedNurses;
   let i = 1;
