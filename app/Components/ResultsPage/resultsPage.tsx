@@ -11,6 +11,14 @@ export const ResultsPage = ({
   list: Nurse[];
   changeResults(i: any): any;
 }) => {
+  const getAcuity = (nurse: Nurse) => {
+    return nurse.patients.length > 0
+      ? nurse.patients
+          .map((patient) => patient.acuity)
+          .reduce((sum, curr) => sum + curr)
+      : 0;
+  };
+
   console.warn(list);
   return (
     <>
@@ -41,7 +49,7 @@ export const ResultsPage = ({
               <Row>
                 <TextBig text={nurse.name} />
                 <Spacer />
-                <TextBig text={'Total Acuity: ' + nurse.getAcuity()} />
+                <TextBig text={'Total Acuity: ' + getAcuity(nurse)} />
               </Row>
               <View
                 style={{
