@@ -19,7 +19,7 @@ const App = () => {
       {results?.length === 0 ? (
         <AddingPage
           nurses={nurses}
-          patients={generatePatients(13, 1)}
+          patients={generatePatients(15, 1)}
           preferences={preferences}
           changeResults={changeResults}
         />

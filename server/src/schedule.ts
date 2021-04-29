@@ -181,5 +181,11 @@ export const assign = async (
       );
     }
   }
+  for (const nurse of bestSolution) {
+    for (const patient of nurse.patients) {
+      delete patient.room.adjacency;
+    }
+  }
+
   return bestSolution;
 };

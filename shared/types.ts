@@ -29,7 +29,7 @@ export interface IInput {
 }
 export interface IRoom {
   name: string;
-  adjacency: IAdjacency[];
+  adjacency?: IAdjacency[];
 }
 export interface IAdjacency {
   room: IRoom;
