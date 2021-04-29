@@ -165,6 +165,7 @@ export const assign = async (
       break;
     }
     console.log(`beginning sub problem ${i++}/${subProblems.length}`);
+    console.log(convertedPatients.map((p) => p.acuity));
     try {
       results = await MakeSolutionsRecursive(
         {
