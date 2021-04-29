@@ -20,7 +20,6 @@ export const cloneInputByValue = (input: IInput): IInput => {
   return {
     nurses: cloneDeep(input.nurses),
     patients: [...input.patients],
-    solutions: input.solutions,
   };
 };
 export const cloneResultByValue = (
@@ -30,7 +29,6 @@ export const cloneResultByValue = (
   return {
     final: result.final,
     solutions: [...result.solutions, ...oldResult.solutions],
-    totalOps: result.totalOps + oldResult.totalOps,
   };
 };
 
@@ -101,4 +99,14 @@ export const getHighestAcuity = (patients: IPatient[]) => {
     }
   }
   return maxAcuity;
+};
+
+export const chunkArray = (anArray, chunkSize) => {
+  const results = [];
+
+  while (anArray.length) {
+    results.push(anArray.splice(0, chunkSize));
+  }
+
+  return results;
 };

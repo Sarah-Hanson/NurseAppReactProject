@@ -2,6 +2,7 @@ import { FindPathDist } from "./shortestPath";
 import { makeFloorPlan } from "./baseFloorPlan";
 import {
   calculateMaxDisparity,
+  chunkArray,
   cloneInputByValue,
   cloneResultByValue,
   convertNurses,
@@ -13,15 +14,17 @@ import {
 } from "./helpers";
 import {
   IInput,
-  Nurse,
   IPreference,
   IScheduleResult,
+  Nurse,
 } from "../../shared/types";
-import { makeSolutions } from "./makeSolutions";
+import { MakeSolutionsRecursive } from "./makeSolutionsRecursive";
 
 const maxDisparity = 3; // Maximum allowable disparity for a solution
 let snipLevel; // dont go down a branch if the acuity is higher than this to prevent trying to stack every patient on one nurse
 const cutResults = 5000; // We don't need more solutions that this, so stop getting them
+
+const chunkSize = 8;
 
 // Multipliers for scoring weights
 const preferenceMultiplier = 2;
@@ -79,7 +82,6 @@ const calculateBestScore = (results: Nurse[][], preferences: IPreference[]) => {
       winningResult = result;
     }
   }
-
   console.log("Winning score received", bestScore.toLocaleString(), "points!");
   return winningResult;
 };
@@ -87,7 +89,7 @@ const calculateBestScore = (results: Nurse[][], preferences: IPreference[]) => {
 // The main meat, get all possible permutations of results that fit into a given range of
 // expected criteria defined at the top of file
 const permute = async (input: IInput): Promise<IScheduleResult> => {
-  let result: IScheduleResult = { final: false, solutions: [], totalOps: 1 };
+  let result: IScheduleResult = { final: false, solutions: [] };
   const disparity = calculateMaxDisparity(input.nurses);
 
   // Frees up the node loop to answer other things
@@ -96,7 +98,7 @@ const permute = async (input: IInput): Promise<IScheduleResult> => {
   if (disparity < snipLevel)
     if (input.patients.length === 0) {
       if (disparity < maxDisparity) {
-        result = { final: true, solutions: [input.nurses], totalOps: 1 };
+        result = { final: true, solutions: [input.nurses] };
       }
     } else {
       for (let i = 0; i < input.nurses.length; i++) {
@@ -131,41 +133,53 @@ export const assign = async (
     nurses: convertNurses(nurses),
     patients: convertPatients(patients, rooms),
   });
+  snipLevel = getHighestAcuity(convertedPatients) + 1;
+
   console.log(
     "Permuting Results with roughly",
     factorial(patients.length).toLocaleString(),
     "possible permutations"
   );
 
-  snipLevel = getHighestAcuity(convertedPatients) + 1;
-
-  // Old recursive way to do it
-  // try {
-  //   results = await permute({
-  //     nurses: convertedNurses,
-  //     patients: convertedPatients,
-  //     solutions: 0,
-  //   });
-  // } catch (tossedResult) {
-  //   results = tossedResult;
-  // }
-
-  try {
-    results = await makeSolutions(convertedNurses, convertedPatients, {
-      snipLevel,
-      maxDisparity,
-      cutResults,
-    });
-  } catch (err) {
-    console.warn(err.message);
+  // New sub-problem recursive solution
+  const subProblems = chunkArray(convertedPatients, chunkSize);
+  let bestSolution = convertedNurses;
+  let i = 1;
+  for (const subProblem of subProblems) {
+    if (bestSolution.length === 0) {
+      console.warn("An error has occurred and no solutions were found");
+      break;
+    }
+    console.log(`beginning sub problem ${i++}/${subProblems.length}`);
+    try {
+      results = await MakeSolutionsRecursive(
+        {
+          nurses: bestSolution,
+          patients: subProblem,
+        },
+        {
+          snipLevel,
+          maxDisparity,
+          cutResults,
+        }
+      );
+    } catch (tossedResult) {
+      if (tossedResult.message) {
+        console.warn(tossedResult.message);
+      } else {
+        results = tossedResult;
+      }
+    } finally {
+      console.log(
+        "Moving to scoring with",
+        results?.solutions.length || "unknown",
+        "solutions found."
+      );
+      bestSolution = calculateBestScore(
+        results.solutions,
+        convertedPreferences
+      );
+    }
   }
-
-  console.log(
-    "Moving to scoring with",
-    results.solutions.length,
-    "solutions found in",
-    results.totalOps,
-    "operations"
-  );
-  return calculateBestScore(results.solutions, convertedPreferences);
+  return bestSolution;
 };

@@ -6,19 +6,25 @@ export async function makeSolutions(
   nurses: Nurse[],
   patients: IPatient[],
   settings: { snipLevel: number; maxDisparity: number; cutResults: number }
-): Promise<Nurse[]> {
+): Promise<{ solutions: Nurse[]; totalOps: number }> {
   const { snipLevel, maxDisparity, cutResults } = settings;
-  let solutions = [];
+  const solutions = [];
 
   const state = new Iterations(nurses, patients);
 
+  let totalOps = 0;
+
   while (solutions.length < cutResults) {
+    totalOps++;
     if (state.validSolution(maxDisparity)) {
       solutions.push(state.currentNurses());
     }
 
-    if (state.noPatients() || state.currentDisparity() >= snipLevel) {
-      state.pop();
+    if (state.noPatients() || state.getDisparity() >= snipLevel) {
+      // breaks loop on if on last state
+      if (!state.pop()) {
+        break;
+      }
     } else {
       if (!state.patientIncrementExhausted()) {
         state.currentIteration().patientIncrement++;
@@ -26,14 +32,17 @@ export async function makeSolutions(
         state.currentIteration().patientIncrement = 0;
         state.currentIteration().nurseIncrement++;
       } else {
-        state.pop();
+        // breaks loop on if on last state
+        if (!state.pop()) {
+          break;
+        }
       }
-      state.push(state.currentNurses(), state.currentPatients());
+      state.push(state.currentNurses(), state.getPatients());
       state.addPatientToNurse();
     }
+    await setImmediatePromise();
   }
-  await setImmediatePromise();
-  return solutions;
+  return { solutions, totalOps };
 }
 
 class Iterations {
@@ -42,25 +51,23 @@ class Iterations {
       { nurses, patients, nurseIncrement: 0, patientIncrement: 0 },
     ];
   }
-  private internalStack: IIteration[];
+  readonly internalStack: IIteration[];
 
-  public currentIteration = () => this[this.internalStack.length - 1];
-  public currentNurses = () => this.currentIteration().nurses;
-  public currentPatients = () => this.currentIteration().patients;
-  public currentNurseIncrement = () => this.currentIteration().nurseIncrement;
-  public currentPatientIncrement = () =>
-    this.currentIteration().patientIncrement;
-  public currentDisparity = () => calculateMaxDisparity(this.currentNurses());
+  public currentIteration = (): IIteration =>
+    this.internalStack[this.internalStack.length - 1];
+  public currentNurses = (): Nurse[] => this.currentIteration().nurses;
+  public getPatients = (): IPatient[] => this.currentIteration().patients;
+  public getNurseIncrement = () => this.currentIteration().nurseIncrement;
+  public getPatientIncrement = () => this.currentIteration().patientIncrement;
+  public getDisparity = () => calculateMaxDisparity(this.currentNurses());
 
-  public getCurrentNurseAtIncrement = () =>
-    this.currentNurses()[this.currentNurseIncrement];
-  public getCurrentPatientAtIncrement = () =>
-    this.currentPatients()[this.currentPatientIncrement()];
+  public getNurseAtIncrement = (): Nurse =>
+    this.currentNurses()[this.getNurseIncrement()];
+  public getPatientAtIncrement = (): IPatient =>
+    this.getPatients()[this.getPatientIncrement()];
 
   public addPatientToNurse = () =>
-    this.getCurrentNurseAtIncrement().patients.push(
-      this.getCurrentPatientAtIncrement()
-    );
+    this.getNurseAtIncrement().patients.push(this.pullPatient());
 
   public patientIncrementExhausted = () =>
     this.currentIteration().patientIncrement >=
@@ -71,7 +78,10 @@ class Iterations {
 
   public noPatients = () => this.currentIteration()?.patients.length === 0;
   public validSolution = (maxDisparity) =>
-    this.noPatients() && this.currentDisparity <= maxDisparity;
+    this.noPatients() && this.getDisparity <= maxDisparity;
+
+  private pullPatient = (): IPatient =>
+    this.getPatients().splice(this.getPatientIncrement(), 1)[0];
 
   public pop = () => this.internalStack.pop();
   public push = (nurses: Nurse[], patients: IPatient[]) =>

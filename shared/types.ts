@@ -22,12 +22,10 @@ export interface IPreference {
 export interface IScheduleResult {
   final: boolean;
   solutions: Nurse[][];
-  totalOps: number;
 }
 export interface IInput {
   nurses: Nurse[];
   patients: IPatient[];
-  solutions: number;
 }
 export interface IRoom {
   name: string;
