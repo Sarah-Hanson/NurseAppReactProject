@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, Row, TextDel} from '../common';
+import {Card, Row, TextDel} from '../Common/common';
 import {TouchableOpacity} from 'react-native';
 
 export const CardItem = ({

@@ -9,14 +9,20 @@ export class Nurse {
       : 0;
   }
 }
+export interface INurse {
+  id: string;
+  name: string;
+  patients: IPatient[];
+}
+
 export interface IPatient {
   id: string;
   acuity: number;
   room: IRoom | undefined;
 }
 export interface IPreference {
-  nurse: Nurse | undefined;
-  patient: IPatient | undefined;
+  nurse?: Nurse;
+  patient?: IPatient;
   weight: number;
 }
 export interface IScheduleResult {

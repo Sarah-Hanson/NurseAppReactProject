@@ -1,33 +1,29 @@
 import 'react-native-get-random-values';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {SafeAreaView} from 'react-native';
-import {AddingPage} from './Components/AddingPage/addingPage';
-import {ResultsPage} from './Components/ResultsPage/resultsPage';
-import {generatePatients, nurses, preferences} from './testData';
-import axios from 'axios';
+import {Navigator} from './src/Navigation/Navigator';
+import {StateProvider} from './src/StateProvider';
+import {axiosConfig} from './src/axiosConfig';
+import {colors} from './src/Common/common';
+import {Provider as PaperProvider} from 'react-native-paper';
+import {initialState, reducer} from './src/ActionHandler';
 
 const App = () => {
-  const [results, changeResults] = useState([]);
-  axios.defaults.baseURL = 'http://sarah-nurse-app.herokuapp.com';
-  // axios.defaults.baseURL = 'http://localhost';
-  axios.defaults.headers.post['Content-Type'] = 'application/json';
+  axiosConfig();
+
   return (
-    <SafeAreaView
-      style={{
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}>
-      {results?.length === 0 ? (
-        <AddingPage
-          nurses={nurses}
-          patients={generatePatients(15, 1)}
-          preferences={preferences}
-          changeResults={changeResults}
-        />
-      ) : (
-        <ResultsPage list={results} changeResults={changeResults} />
-      )}
-    </SafeAreaView>
+    <StateProvider initialState={initialState} reducer={reducer}>
+      <PaperProvider>
+        <SafeAreaView
+          style={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            backgroundColor: colors.plum,
+          }}>
+          <Navigator />
+        </SafeAreaView>
+      </PaperProvider>
+    </StateProvider>
   );
 };
 
