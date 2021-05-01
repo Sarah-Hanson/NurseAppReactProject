@@ -3,8 +3,7 @@ import {PageWrapper} from '../Common/PageWrapper';
 import {TextBig} from '../Common/common';
 import {View} from 'react-native';
 import {useStateValue} from '../StateProvider';
-import {Pages} from '../Navigation/Navigator';
-import {Actions} from '../ActionHandler';
+import {Actions, Pages} from '../Common/Enums';
 
 export const ErrorPage = () => {
   // @ts-ignore

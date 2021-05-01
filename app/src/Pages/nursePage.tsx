@@ -6,7 +6,7 @@ import {ScrollView, TouchableOpacity, View} from 'react-native';
 import {INurse} from '../../../shared/types';
 import {TextInput} from 'react-native-paper';
 import {nanoid} from 'nanoid';
-import {Actions} from '../ActionHandler';
+import {Actions} from '../Common/Enums';
 
 export const NursePage = () => {
   // @ts-ignore

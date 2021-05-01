@@ -3,8 +3,7 @@ import {TouchableOpacity, View} from 'react-native';
 import {colors, HorizontalRule, Row, Spacer, TextBig} from './common';
 import {Footer} from './Footer';
 import {useStateValue} from '../StateProvider';
-import {Pages} from '../Navigation/Navigator';
-import {Actions} from '../ActionHandler';
+import {Actions, Pages} from './Enums';
 
 export const PageWrapper = (props) => {
   // @ts-ignore

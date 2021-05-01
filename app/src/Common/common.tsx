@@ -20,8 +20,8 @@ export const Title = ({text}: {text: string}) => {
 export const TextBig = ({text}: {text: string}) => {
   return <Text style={[sh.text, sh.big]}>{text}</Text>;
 };
-export const TextSmall = ({text}: {text: string}) => {
-  return <Text style={[sh.text, sh.small]}>{text}</Text>;
+export const TextSmall = ({text, style}: {text: string; style?: any}) => {
+  return <Text style={[sh.text, sh.small, style]}>{text}</Text>;
 };
 export const TextAdd = ({text}: {text: string}) => {
   return <Text style={[sh.text, sh.big, sh.add]}>{text}</Text>;

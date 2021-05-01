@@ -1,21 +1,18 @@
 import {INurse} from '../../shared/types';
-import {Pages} from './Navigation/Navigator';
+import {makeFloorPlan, Room} from './floorPlan';
+import {Actions, Pages} from './Common/Enums';
 
 interface AppState {
   page: string;
   nurses: INurse[];
+  rooms: Room[];
 }
 
 export const initialState: AppState = {
   page: Pages.nurses,
   nurses: [],
+  rooms: makeFloorPlan(),
 };
-
-export enum Actions {
-  changePage = 'changePage',
-  addNurse = 'addNurse',
-  removeNurse = 'removeNurse',
-}
 
 export const reducer = (state, action) => {
   switch (action.type) {
