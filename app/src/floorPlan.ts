@@ -2,7 +2,13 @@ import {nanoid} from 'nanoid';
 
 export interface Room {
   name: string;
-  beds: {name: string; active: boolean; acuity: number; id: string}[];
+  beds: IBed[];
+}
+export interface IBed {
+  name: string;
+  active: boolean;
+  acuity: number;
+  id: string;
 }
 
 export const makeFloorPlan = (): Room[] => {

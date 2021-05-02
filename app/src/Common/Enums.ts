@@ -11,4 +11,7 @@ export enum Actions {
   changePage = 'changePage',
   addNurse = 'addNurse',
   removeNurse = 'removeNurse',
+  incrementAcuity = 'incrementAcuity',
+  decrementAcuity = 'decrementAcuity',
+  toggleBed = 'toggleRoom',
 }
