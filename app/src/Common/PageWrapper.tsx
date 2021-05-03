@@ -1,6 +1,13 @@
 import React from 'react';
 import {TouchableOpacity, View} from 'react-native';
-import {colors, HorizontalRule, Row, Spacer, TextBig} from './common';
+import {
+  colors,
+  HorizontalRule,
+  Row,
+  Spacer,
+  TextBig,
+  TextSmall,
+} from './common';
 import {Footer} from './Footer';
 import {useStateValue} from '../StateProvider';
 import {Actions, Pages} from './Enums';
@@ -39,9 +46,7 @@ export const PageWrapper = (props) => {
 const NavBar = () => {
   // @ts-ignore
   const [{page}, dispatch] = useStateValue();
-  const pages = [Pages.nurses, Pages.rooms, Pages.teams, Pages.settings].filter(
-    (e) => e !== page,
-  );
+  const pages = [Pages.nurses, Pages.rooms, Pages.teams, Pages.settings];
 
   if (page !== Pages.results) {
     return <Row>{pages.map((p) => NavButton(p))}</Row>;
@@ -66,7 +71,7 @@ const NavButton = (page: string) => {
       key={page}
       onPress={() => dispatch({type: Actions.changePage, payload: page})}
       style={{width: '25%'}}>
-      <TextBig text={page} />
+      <TextSmall text={page} />
     </TouchableOpacity>
   );
 };

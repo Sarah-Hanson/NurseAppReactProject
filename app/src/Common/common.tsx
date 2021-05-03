@@ -1,4 +1,4 @@
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import React from 'react';
 
 export interface ICardItem {
@@ -35,6 +35,29 @@ export const TextDel = ({text}: {text: string}) => {
 export const Spacer = () => <View style={{flexGrow: 1}} />;
 
 export const HorizontalRule = () => <View style={sh.horizontalRule} />;
+
+export const Box = ({
+  isSet,
+  onPress,
+}: {
+  isSet: boolean;
+  onPress: () => void;
+}) => {
+  return (
+    <TouchableOpacity
+      style={{
+        height: 15,
+        width: 15,
+        borderColor: colors.white,
+        borderWidth: 2,
+        borderRadius: 1,
+        backgroundColor: isSet ? colors.white : colors.black,
+        marginHorizontal: '5%',
+      }}
+      onPress={() => onPress()}
+    />
+  );
+};
 
 export enum colors {
   darker = '#696969',

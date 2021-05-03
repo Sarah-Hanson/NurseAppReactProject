@@ -2,6 +2,7 @@ import {useStateValue} from '../StateProvider';
 import {FENurse, FEPreference, IRoom} from '../../../shared/types';
 import {TouchableOpacity, View} from 'react-native';
 import {
+  Box,
   colors,
   HorizontalRule,
   Row,
@@ -94,44 +95,11 @@ const BedItem = ({room, bed}: {room: IRoom; bed: IBed}) => {
         style={{width: '50%'}}
       />
       <Spacer />
-      <Box
-        isSet={bedPref?.weight < 0}
-        bed={bed}
-        onPress={() => setPreference(-5)}
-      />
-      <Box isSet={!bedPref} bed={bed} onPress={() => setPreference(0)} />
-      <Box
-        isSet={bedPref?.weight > 0}
-        bed={bed}
-        onPress={() => setPreference(5)}
-      />
+      <Box isSet={bedPref?.weight < 0} onPress={() => setPreference(-5)} />
+      <Box isSet={!bedPref} onPress={() => setPreference(0)} />
+      <Box isSet={bedPref?.weight > 0} onPress={() => setPreference(5)} />
       <Spacer />
     </Row>
-  );
-};
-
-const Box = ({
-  isSet,
-  bed,
-  onPress,
-}: {
-  isSet: boolean;
-  bed: IBed;
-  onPress: () => void;
-}) => {
-  return (
-    <TouchableOpacity
-      style={{
-        height: 15,
-        width: 15,
-        borderColor: colors.white,
-        borderWidth: 2,
-        borderRadius: 1,
-        backgroundColor: isSet ? colors.white : colors.black,
-        marginHorizontal: '5%',
-      }}
-      onPress={() => onPress()}
-    />
   );
 };
 
