@@ -87,6 +87,7 @@ const Box = ({roomId, bed}: {roomId: string; bed: IBed}) => {
           type: Actions.toggleBed,
           payload: {roomId, bedId: bed.id},
         })
-      }></TouchableOpacity>
+      }
+    />
   );
 };

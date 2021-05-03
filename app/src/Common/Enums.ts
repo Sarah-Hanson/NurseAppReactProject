@@ -14,4 +14,8 @@ export enum Actions {
   incrementAcuity = 'incrementAcuity',
   decrementAcuity = 'decrementAcuity',
   toggleBed = 'toggleRoom',
+  selectNurse = 'selectNurse',
+  addPreference = 'addPreference',
+  removePreference = 'removePreference',
+  setPreference = 'setPreference',
 }

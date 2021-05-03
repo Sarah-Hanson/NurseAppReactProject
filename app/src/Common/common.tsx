@@ -9,16 +9,19 @@ export interface ICardItem {
 }
 
 export const Row = (props: {children: React.ReactNode; style?: any}) => {
-  return <View style={sh.row}>{props.children}</View>;
+  return <View style={[sh.row, props.style]}>{props.children}</View>;
+};
+export const Column = (props: {children: React.ReactNode; style?: any}) => {
+  return <View style={[sh.column, props.style]}>{props.children}</View>;
 };
 export const Card = (props: {children: React.ReactNode}) => {
   return <View style={sh.card}>{props.children}</View>;
 };
-export const Title = ({text}: {text: string}) => {
-  return <Text style={[sh.text, sh.title]}>{text}</Text>;
+export const Title = ({text, style}: {text: string; style?: any}) => {
+  return <Text style={[sh.text, sh.title, style]}>{text}</Text>;
 };
-export const TextBig = ({text}: {text: string}) => {
-  return <Text style={[sh.text, sh.big]}>{text}</Text>;
+export const TextBig = ({text, style}: {text: string; style?: any}) => {
+  return <Text style={[sh.text, sh.big, style]}>{text}</Text>;
 };
 export const TextSmall = ({text, style}: {text: string; style?: any}) => {
   return <Text style={[sh.text, sh.small, style]}>{text}</Text>;
@@ -51,6 +54,12 @@ const sh = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+  },
+  column: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
   },
   card: {
     borderRadius: 15,

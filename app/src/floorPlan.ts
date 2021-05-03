@@ -18,7 +18,7 @@ export const makeFloorPlan = (): Room[] => {
     const room = rooms.get('Room' + roomIndex);
     for (let i = 0; i < beds; i++) {
       room.beds.push({
-        name: 'Bed ' + i,
+        name: `Bed ${i + 1}`,
         active: false,
         id: nanoid(),
         acuity: 0,

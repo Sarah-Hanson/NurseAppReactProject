@@ -9,12 +9,15 @@ export class Nurse {
       : 0;
   }
 }
-export interface INurse {
+export interface FENurse {
   id: string;
   name: string;
-  patients: IPatient[];
 }
-
+export interface FEPreference {
+  nurseId: string;
+  bedId: string;
+  weight: number;
+}
 export interface IPatient {
   id: string;
   acuity: number;

@@ -2,37 +2,32 @@ import React, {useState} from 'react';
 import {PageWrapper} from '../Common/PageWrapper';
 import {Card, colors, Row, Spacer, TextBig, Title} from '../Common/common';
 import {useStateValue} from '../StateProvider';
-import {ScrollView, TouchableOpacity, View} from 'react-native';
-import {INurse} from '../../../shared/types';
+import {Alert, ScrollView, TouchableOpacity, View} from 'react-native';
+import {FENurse} from '../../../shared/types';
 import {TextInput} from 'react-native-paper';
 import {nanoid} from 'nanoid';
 import {Actions} from '../Common/Enums';
+import {PreferencePage} from './PreferencePage';
 
 export const NursePage = () => {
   // @ts-ignore
-  const [{nurses}, dispatch] = useStateValue();
+  const [{nurses, selectedNurseId}, dispatch] = useStateValue();
 
-  const rmItem = (list: any, setList: any, index: number) => {
-    list.splice(index, 1);
-    const newList = [...list]; //force re-render since just mutating doesn't get picked up
-    setList(newList);
-  };
-
-  return (
-    <>
-      <PageWrapper>
-        <AddNurse />
-        <ScrollView>
-          {nurses.map((nurse) => (
-            <NurseCard nurse={nurse} />
-          ))}
-        </ScrollView>
-      </PageWrapper>
-    </>
+  return selectedNurseId ? (
+    <PreferencePage />
+  ) : (
+    <PageWrapper>
+      <AddNurse />
+      <ScrollView>
+        {nurses.map((nurse) => (
+          <NurseCard key={nurse.id} nurse={nurse} />
+        ))}
+      </ScrollView>
+    </PageWrapper>
   );
 };
 
-const NurseCard = ({nurse}: {nurse: INurse}) => {
+const NurseCard = ({nurse}: {nurse: FENurse}) => {
   // @ts-ignore
   const [{nurses}, dispatch] = useStateValue();
 
@@ -48,7 +43,7 @@ const NurseCard = ({nurse}: {nurse: INurse}) => {
         }}
         onPress={() =>
           dispatch({
-            type: Actions.removeNurse,
+            type: Actions.selectNurse,
             payload: {id: nurse.id},
           })
         }>
@@ -79,7 +74,9 @@ const AddNurse = () => {
           onChangeText={(name) => onChangeName(name)}
         />
         <TouchableOpacity
-          onPress={() => addNurse()}
+          onPress={() =>
+            name ? addNurse() : Alert.alert('Please Enter a name')
+          }
           style={{
             backgroundColor: colors.green,
             borderRadius: 400,
