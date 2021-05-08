@@ -69,3 +69,31 @@ export const makeFloorPlan = (): Room[] => {
 
   return Array.from(rooms.values());
 };
+
+export const selectTeamForRoom = (room: Room, nights): number => {
+  if (room.name === 'RoomOC') {
+    return 0;
+  }
+  // @ts-ignore
+  const roomNumber = parseInt(room.name.match(/\d+$/)[0], 10);
+  if (!nights) {
+    if (roomNumber <= 6) {
+      return 0;
+    } else if (roomNumber <= 16) {
+      return 1;
+    } else if (roomNumber <= 22) {
+      return 2;
+    } else if (roomNumber <= 50) {
+      return 3;
+    }
+  } else {
+    if (roomNumber <= 9) {
+      return 0;
+    } else if (roomNumber <= 22) {
+      return 1;
+    } else if (roomNumber <= 50) {
+      return 2;
+    }
+  }
+  return 0;
+};

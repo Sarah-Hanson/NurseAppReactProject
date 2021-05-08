@@ -1,3 +1,5 @@
+import { IBed } from "../app/src/floorPlan";
+
 export class Nurse {
   constructor(public name: string, public patients: IPatient[]) {}
 
@@ -47,4 +49,9 @@ export interface IAdjacency {
 export interface IPathResult {
   final: boolean;
   distance: number;
+}
+export interface Team {
+  name: string;
+  nurses: FENurse[];
+  beds: IBed[];
 }

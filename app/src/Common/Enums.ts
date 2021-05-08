@@ -18,4 +18,8 @@ export enum Actions {
   addPreference = 'addPreference',
   removePreference = 'removePreference',
   setPreference = 'setPreference',
+  toggleNights = 'toggleNights',
+  switchTeamBed = 'switchTeamBed',
+  switchTeamNurse = 'switchTeamNurse',
+  setResults = 'setResults',
 }
