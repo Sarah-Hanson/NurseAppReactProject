@@ -1,6 +1,10 @@
 export class Nurse {
   constructor(public name: string, public patients: IPatient[]) {}
 
+  static fromJSON(json: { name: string; patients: IPatient[] }) {
+    return new Nurse(json.name, json.patients);
+  }
+
   public getAcuity() {
     return this.patients.length > 0
       ? this.patients

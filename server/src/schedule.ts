@@ -101,7 +101,9 @@ export const assign = async (
   const solutions = [];
 
   for (const team of teams) {
-    const convertedNurses = team.nurses;
+    const convertedNurses = team.nurses.map((jsonNurse) =>
+      Nurse.fromJSON(jsonNurse)
+    );
     const convertedPatients = convertPatients(team.beds, rooms);
     const convertedPreferences = convertPreferences(
       preferences,
