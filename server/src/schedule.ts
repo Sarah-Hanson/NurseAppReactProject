@@ -101,89 +101,88 @@ export const assign = async (
   const solutions = [];
 
   for (const team of teams) {
-    const convertedNurses = team.nurses.map((jsonNurse) =>
-      Nurse.fromJSON(jsonNurse)
-    );
-    const convertedPatients = convertPatients(team.beds, rooms);
-    const convertedPreferences = convertPreferences(
-      preferences,
-      convertedPatients
-    );
-    snipLevel = getHighestAcuity(convertedPatients) + 1;
+    if (team.nurses?.length && team.beds?.length) {
+      const convertedNurses = team.nurses.map((jsonNurse) =>
+        Nurse.fromJSON(jsonNurse)
+      );
+      const convertedPatients = convertPatients(team.beds, rooms);
+      const convertedPreferences = convertPreferences(
+        preferences,
+        convertedPatients
+      );
+      snipLevel = getHighestAcuity(convertedPatients) + 1;
 
-    console.log(
-      "Permuting Results with roughly",
-      factorial(team.beds.length).toLocaleString(),
-      "possible permutations"
-    );
+      console.log(
+        "Permuting Results with roughly",
+        factorial(team.beds.length).toLocaleString(),
+        "possible permutations"
+      );
 
-    // New recursive sub-problem solution, break into smaller solvable blocks and then run those blocks one after another
-    // convertedPatients.sort((a, b) =>
-    //   a.acuity === b.acuity ? 0 : a.acuity < b.acuity ? -1 : 1
-    // );
-
-    // const chunkSize = Math.floor(patients.length / 2);
-    const chunkSize = 10;
-    const subProblems: IPatient[][] = chunkArray(convertedPatients, chunkSize);
-    if (subProblems[subProblems.length - 1].length < chunkSize) {
-      let j = 0;
-      for (const patient of subProblems[subProblems.length - 1]) {
-        if (j >= convertedNurses.length) {
-          j = 0;
-        }
-        convertedNurses[j].patients.push(patient);
-        j++;
-      }
-    }
-    for (const nurse of convertedNurses) {
-      console.log(nurse.name, nurse.getAcuity());
-      console.log(nurse.patients.map((p) => p.acuity));
-    }
-    let i = 1;
-    let bestSolution = convertedNurses;
-    for (const subProblem of subProblems) {
-      if (bestSolution.length === 0) {
-        console.warn("An error has occurred and no solutions were found");
-        break;
-      }
-      console.log(`beginning sub problem ${i++}/${subProblems.length}`);
-      console.log(subProblem.map((p) => p.acuity));
-      try {
-        results = await MakeSolutionsRecursive(
-          {
-            nurses: bestSolution,
-            patients: subProblem,
-          },
-          {
-            snipLevel,
-            maxDisparity,
-            cutResults,
+      const chunkSize = 10;
+      const subProblems: IPatient[][] = chunkArray(
+        convertedPatients,
+        chunkSize
+      );
+      if (subProblems[subProblems.length - 1].length < chunkSize) {
+        let j = 0;
+        for (const patient of subProblems[subProblems.length - 1]) {
+          if (j >= convertedNurses.length) {
+            j = 0;
           }
-        );
-      } catch (tossedResult) {
-        if (tossedResult.message) {
-          console.warn(tossedResult.message);
-        } else {
-          results = tossedResult;
+          convertedNurses[j].patients.push(patient);
+          j++;
         }
-      } finally {
-        console.log(
-          "Moving to scoring with",
-          results?.solutions.length || "unknown",
-          "solutions found."
-        );
-        bestSolution = calculateBestScore(
-          results.solutions,
-          convertedPreferences
-        );
       }
-    }
-    for (const nurse of bestSolution) {
-      for (const patient of nurse.patients) {
-        delete patient.room.adjacency;
+      for (const nurse of convertedNurses) {
+        console.log(nurse.name, nurse.getAcuity());
+        console.log(nurse.patients.map((p) => p.acuity));
       }
+      let i = 1;
+      let bestSolution = convertedNurses;
+      for (const subProblem of subProblems) {
+        if (bestSolution.length === 0) {
+          console.warn("An error has occurred and no solutions were found");
+          break;
+        }
+        console.log(`beginning sub problem ${i++}/${subProblems.length}`);
+        console.log(subProblem.map((p) => p.acuity));
+        try {
+          results = await MakeSolutionsRecursive(
+            {
+              nurses: bestSolution,
+              patients: subProblem,
+            },
+            {
+              snipLevel,
+              maxDisparity,
+              cutResults,
+            }
+          );
+        } catch (tossedResult) {
+          if (tossedResult.message) {
+            console.warn(tossedResult.message);
+          } else {
+            results = tossedResult;
+          }
+        } finally {
+          console.log(
+            "Moving to scoring with",
+            results?.solutions.length || "unknown",
+            "solutions found."
+          );
+          bestSolution = calculateBestScore(
+            results.solutions,
+            convertedPreferences
+          );
+        }
+      }
+      for (const nurse of bestSolution) {
+        for (const patient of nurse.patients) {
+          delete patient.room.adjacency;
+        }
+      }
+      solutions.push(bestSolution);
     }
-    solutions.push(bestSolution);
   }
 
   return solutions;
