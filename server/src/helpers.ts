@@ -52,7 +52,7 @@ export const convertPreferences = (
     ({ nurse, weight, bed }: PreferencePayload): IPreference => ({
       nurse,
       patient: patients.find((listPatient) => listPatient.id === bed),
-      weight: weight,
+      weight,
     })
   );
 };

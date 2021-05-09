@@ -3,23 +3,19 @@ import { makeFloorPlan } from "./baseFloorPlan";
 import {
   calculateMaxDisparity,
   chunkArray,
-  convertNurses,
   convertPatients,
   convertPreferences,
   factorial,
   getHighestAcuity,
 } from "./helpers";
 import {
-  FEPreference,
   IPatient,
   IPreference,
   Nurse,
   PreferencePayload,
-  Team,
   TeamPayload,
 } from "../../shared/types";
 import { MakeSolutionsRecursive } from "./makeSolutionsRecursive";
-import convert from "lodash/fp/convert";
 
 const maxDisparity = 2; // Maximum allowable disparity for a solution
 let snipLevel; // dont go down a branch if the acuity is higher than this to prevent trying to stack every patient on one nurse
@@ -102,6 +98,7 @@ export const assign = async (
 ): Promise<Nurse[]> => {
   let results;
   const rooms = makeFloorPlan();
+  const solutions = [];
 
   for (const team of teams) {
     const convertedNurses = team.nurses;
@@ -184,7 +181,8 @@ export const assign = async (
         delete patient.room.adjacency;
       }
     }
+    solutions.push(bestSolution);
   }
 
-  return bestSolution;
+  return solutions;
 };
