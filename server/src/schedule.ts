@@ -9,8 +9,17 @@ import {
   factorial,
   getHighestAcuity,
 } from "./helpers";
-import { IPatient, IPreference, Nurse } from "../../shared/types";
+import {
+  FEPreference,
+  IPatient,
+  IPreference,
+  Nurse,
+  PreferencePayload,
+  Team,
+  TeamPayload,
+} from "../../shared/types";
 import { MakeSolutionsRecursive } from "./makeSolutionsRecursive";
+import convert from "lodash/fp/convert";
 
 const maxDisparity = 2; // Maximum allowable disparity for a solution
 let snipLevel; // dont go down a branch if the acuity is higher than this to prevent trying to stack every patient on one nurse
@@ -88,91 +97,92 @@ const calculateBestScore = (
 
 // converts front-side data to logic-side format and runs permute, then scores returned values and returns the winner
 export const assign = async (
-  nurses: { name: string }[],
-  patients: { name: string; acuity: number; room: string }[],
-  preferences: { nurse: string; patient: string; weight: number }[]
+  teams: TeamPayload[],
+  preferences: PreferencePayload[]
 ): Promise<Nurse[]> => {
   let results;
   const rooms = makeFloorPlan();
-  const convertedNurses = convertNurses(nurses);
-  const convertedPatients = convertPatients(patients, rooms);
-  const convertedPreferences = convertPreferences({
-    preferences,
-    nurses: convertNurses(nurses),
-    patients: convertPatients(patients, rooms),
-  });
-  snipLevel = getHighestAcuity(convertedPatients) + 1;
 
-  console.log(
-    "Permuting Results with roughly",
-    factorial(patients.length).toLocaleString(),
-    "possible permutations"
-  );
+  for (const team of teams) {
+    const convertedNurses = team.nurses;
+    const convertedPatients = convertPatients(team.beds, rooms);
+    const convertedPreferences = convertPreferences(
+      preferences,
+      convertedPatients
+    );
+    snipLevel = getHighestAcuity(convertedPatients) + 1;
 
-  // New recursive sub-problem solution, break into smaller solvable blocks and then run those blocks one after another
-  // convertedPatients.sort((a, b) =>
-  //   a.acuity === b.acuity ? 0 : a.acuity < b.acuity ? -1 : 1
-  // );
+    console.log(
+      "Permuting Results with roughly",
+      factorial(team.beds.length).toLocaleString(),
+      "possible permutations"
+    );
 
-  // const chunkSize = Math.floor(patients.length / 2);
-  const chunkSize = 10;
-  const subProblems: IPatient[][] = chunkArray(convertedPatients, chunkSize);
-  if (subProblems[subProblems.length - 1].length < chunkSize) {
-    let j = 0;
-    for (const patient of subProblems[subProblems.length - 1]) {
-      if (j >= convertedNurses.length) {
-        j = 0;
-      }
-      convertedNurses[j].patients.push(patient);
-      j++;
-    }
-  }
-  for (const nurse of convertedNurses) {
-    console.log(nurse.name, nurse.getAcuity());
-    console.log(nurse.patients.map((p) => p.acuity));
-  }
-  let i = 1;
-  let bestSolution = convertedNurses;
-  for (const subProblem of subProblems) {
-    if (bestSolution.length === 0) {
-      console.warn("An error has occurred and no solutions were found");
-      break;
-    }
-    console.log(`beginning sub problem ${i++}/${subProblems.length}`);
-    console.log(subProblem.map((p) => p.acuity));
-    try {
-      results = await MakeSolutionsRecursive(
-        {
-          nurses: bestSolution,
-          patients: subProblem,
-        },
-        {
-          snipLevel,
-          maxDisparity,
-          cutResults,
+    // New recursive sub-problem solution, break into smaller solvable blocks and then run those blocks one after another
+    // convertedPatients.sort((a, b) =>
+    //   a.acuity === b.acuity ? 0 : a.acuity < b.acuity ? -1 : 1
+    // );
+
+    // const chunkSize = Math.floor(patients.length / 2);
+    const chunkSize = 10;
+    const subProblems: IPatient[][] = chunkArray(convertedPatients, chunkSize);
+    if (subProblems[subProblems.length - 1].length < chunkSize) {
+      let j = 0;
+      for (const patient of subProblems[subProblems.length - 1]) {
+        if (j >= convertedNurses.length) {
+          j = 0;
         }
-      );
-    } catch (tossedResult) {
-      if (tossedResult.message) {
-        console.warn(tossedResult.message);
-      } else {
-        results = tossedResult;
+        convertedNurses[j].patients.push(patient);
+        j++;
       }
-    } finally {
-      console.log(
-        "Moving to scoring with",
-        results?.solutions.length || "unknown",
-        "solutions found."
-      );
-      bestSolution = calculateBestScore(
-        results.solutions,
-        convertedPreferences
-      );
     }
-  }
-  for (const nurse of bestSolution) {
-    for (const patient of nurse.patients) {
-      delete patient.room.adjacency;
+    for (const nurse of convertedNurses) {
+      console.log(nurse.name, nurse.getAcuity());
+      console.log(nurse.patients.map((p) => p.acuity));
+    }
+    let i = 1;
+    let bestSolution = convertedNurses;
+    for (const subProblem of subProblems) {
+      if (bestSolution.length === 0) {
+        console.warn("An error has occurred and no solutions were found");
+        break;
+      }
+      console.log(`beginning sub problem ${i++}/${subProblems.length}`);
+      console.log(subProblem.map((p) => p.acuity));
+      try {
+        results = await MakeSolutionsRecursive(
+          {
+            nurses: bestSolution,
+            patients: subProblem,
+          },
+          {
+            snipLevel,
+            maxDisparity,
+            cutResults,
+          }
+        );
+      } catch (tossedResult) {
+        if (tossedResult.message) {
+          console.warn(tossedResult.message);
+        } else {
+          results = tossedResult;
+        }
+      } finally {
+        console.log(
+          "Moving to scoring with",
+          results?.solutions.length || "unknown",
+          "solutions found."
+        );
+        bestSolution = calculateBestScore(
+          results.solutions,
+          convertedPreferences
+        );
+      }
+    }
+    for (const nurse of bestSolution) {
+      for (const patient of nurse.patients) {
+        delete patient.room.adjacency;
+      }
     }
   }
 

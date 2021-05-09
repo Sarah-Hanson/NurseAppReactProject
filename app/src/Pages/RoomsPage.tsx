@@ -10,10 +10,10 @@ import {
   TextSmall,
 } from '../Common/common';
 import React from 'react';
-import {IBed, Room} from '../floorPlan';
-import {ScrollView, TextInput, TouchableOpacity, View} from 'react-native';
+import {Room} from '../floorPlan';
+import {ScrollView, TouchableOpacity, View} from 'react-native';
 import {Actions} from '../Common/Enums';
-import {nanoid} from 'nanoid';
+import {IBed} from '../../../shared/types';
 
 export const RoomsPage = () => {
   // @ts-ignore

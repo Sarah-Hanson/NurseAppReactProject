@@ -1,5 +1,5 @@
 import {useStateValue} from '../StateProvider';
-import {FENurse, FEPreference, IRoom} from '../../../shared/types';
+import {FENurse, FEPreference, IBed, IRoom} from '../../../shared/types';
 import {TouchableOpacity, View} from 'react-native';
 import {
   Box,
@@ -11,7 +11,7 @@ import {
   TextSmall,
   Title,
 } from '../Common/common';
-import {IBed, Room} from '../floorPlan';
+import {Room} from '../floorPlan';
 import {Actions} from '../Common/Enums';
 import React from 'react';
 

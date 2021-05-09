@@ -5,6 +5,10 @@ import {
   IPreference,
   IRoom,
   IScheduleResult,
+  Team,
+  FEPreference,
+  IBed,
+  PreferencePayload,
 } from "../../shared/types";
 import { cloneDeep } from "lodash";
 
@@ -32,40 +36,25 @@ export const cloneResultByValue = (
   };
 };
 
-export const convertPatients = (
-  patients: { name: string; acuity: number; room: string }[],
-  rooms: IRoom[]
-): IPatient[] => {
-  return patients.map(
-    ({ acuity, name, room }): IPatient => ({
-      id: name,
-      acuity,
-      room: rooms.find((listRoom) => listRoom.name === room),
-    })
-  );
+export const convertPatients = (beds: IBed[], rooms: IRoom[]): IPatient[] => {
+  return beds.map(({ name, acuity, room }) => ({
+    id: name,
+    acuity,
+    room: rooms.find((listRoom) => listRoom.name === room),
+  }));
 };
 
-export const convertPreferences = ({
-  preferences,
-  nurses,
-  patients,
-}: {
-  preferences: { nurse: string; patient: string; weight: number }[];
-  nurses: Nurse[];
-  patients: IPatient[];
-}): IPreference[] => {
+export const convertPreferences = (
+  preferences: PreferencePayload[],
+  patients: IPatient[]
+): IPreference[] => {
   return preferences.map(
-    ({ nurse, patient, weight }): IPreference => ({
-      nurse: nurses.find((listNurse) => listNurse.name === nurse),
-      patient: patients.find((listPatient) => listPatient.id === patient),
-      weight,
+    ({ nurse, weight, bed }: PreferencePayload): IPreference => ({
+      nurse,
+      patient: patients.find((listPatient) => listPatient.id === bed),
+      weight: weight,
     })
   );
-};
-
-// Adds a couple fields to the front end nurse -> logic side nurse conversion
-export const convertNurses = (nurses: { name: string }[]): Nurse[] => {
-  return nurses.map((nurse): Nurse => new Nurse(nurse.name, []));
 };
 
 export const setImmediatePromise = () => {

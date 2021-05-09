@@ -4,8 +4,7 @@ import React from 'react';
 import {Box, colors, Row, Spacer, TextSmall} from '../Common/common';
 import {Actions} from '../Common/Enums';
 import {Alert, ScrollView, TouchableOpacity, View} from 'react-native';
-import {FENurse, Team} from '../../../shared/types';
-import {IBed} from '../floorPlan';
+import {FENurse, IBed, Team} from '../../../shared/types';
 
 export const TeamsPage = () => {
   // @ts-ignore

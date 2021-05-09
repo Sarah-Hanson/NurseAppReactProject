@@ -1,5 +1,3 @@
-import { IBed } from "../app/src/floorPlan";
-
 export class Nurse {
   constructor(public name: string, public patients: IPatient[]) {}
 
@@ -23,7 +21,7 @@ export interface FEPreference {
 export interface IPatient {
   id: string;
   acuity: number;
-  room: IRoom | undefined;
+  room?: IRoom;
 }
 export interface IPreference {
   nurse?: Nurse;
@@ -54,4 +52,28 @@ export interface Team {
   name: string;
   nurses: FENurse[];
   beds: IBed[];
+}
+export interface IBed {
+  name: string;
+  active: boolean;
+  acuity: number;
+  id: string;
+  room?: string;
+}
+
+export interface ServerPayload {
+  teams: TeamPayload[];
+  preferences: IPreference[];
+}
+
+export interface TeamPayload {
+  name: string;
+  nurses: Nurse[];
+  beds: IBed[];
+}
+
+export interface PreferencePayload {
+  nurse: Nurse;
+  bed: string;
+  weight: number;
 }

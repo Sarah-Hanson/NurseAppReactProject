@@ -12,9 +12,9 @@ app.get("/", (req, res) => {
 });
 
 app.post("/schedule", (req, res) => {
-  const { nurses, patients, preferences } = req.body;
+  const { teams, preferences } = req.body;
   res.send({ status: 202 });
-  assign(nurses, patients, preferences).then((found) => (results = found));
+  assign(teams, preferences).then((found) => (results = found));
 });
 
 app.get("/schedule", (req, res) => {

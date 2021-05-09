@@ -1,14 +1,9 @@
 import {nanoid} from 'nanoid';
+import {IBed} from '../../shared/types';
 
 export interface Room {
   name: string;
   beds: IBed[];
-}
-export interface IBed {
-  name: string;
-  active: boolean;
-  acuity: number;
-  id: string;
 }
 
 export const makeFloorPlan = (): Room[] => {
