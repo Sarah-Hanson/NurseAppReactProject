@@ -14,15 +14,18 @@ app.get("/", (req, res) => {
 app.post("/schedule", (req, res) => {
   const { teams, preferences } = req.body;
   res.send({ status: 202 });
-  assign(teams, preferences).then((found) => (results = found)).catch((e) => console.warn(e.message);
+  assign(teams, preferences)
+    .then((found) => (results = found))
+    .catch((e) => console.warn(e.message));
 });
 
 app.get("/schedule", (req, res) => {
   if (results) {
     res.send(results);
     results = undefined;
+  } else {
+    res.send({ status: "pending" });
   }
-  res.send({ status: "pending" });
 });
 
 app.post("/echo", (req, res) => {
