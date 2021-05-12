@@ -1,5 +1,5 @@
-import {FENurse, FEPreference, Team} from '../../shared/types';
-import {IBed, makeFloorPlan, Room, selectTeamForRoom} from './floorPlan';
+import {FENurse, FEPreference, IBed, Team} from '../../shared/types';
+import {makeFloorPlan, Room, selectTeamForRoom} from './floorPlan';
 import {Actions, Pages} from './Common/Enums';
 
 interface AppState {
@@ -10,6 +10,7 @@ interface AppState {
   preferences: FEPreference[];
   nights: boolean;
   teams: Team[];
+  results: any;
 }
 
 const makeTeams = () => {
@@ -29,6 +30,7 @@ export const initialState: AppState = {
   preferences: [],
   nights: false,
   teams: makeTeams(),
+  results: [],
 };
 
 export const reducer = (state, action) => {
@@ -67,6 +69,8 @@ export const reducer = (state, action) => {
       return switchTeamBed(state, action.payload);
     case Actions.switchTeamNurse:
       return switchTeamNurse(state, action.payload);
+    case Actions.setResults:
+      return setResults(state, action.payload);
     default:
       return state;
   }
@@ -229,5 +233,12 @@ const switchTeamNurse = (
   team.nurses.push(nurse);
   return {
     ...state,
+  };
+};
+
+const setResults = (state: AppState, payload) => {
+  return {
+    ...state,
+    results: payload,
   };
 };
