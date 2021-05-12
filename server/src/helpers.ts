@@ -1,13 +1,11 @@
 import {
+  IBed,
   IInput,
-  Nurse,
   IPatient,
   IPreference,
   IRoom,
   IScheduleResult,
-  Team,
-  FEPreference,
-  IBed,
+  Nurse,
   PreferencePayload,
 } from "../../shared/types";
 import { cloneDeep } from "lodash";
@@ -37,8 +35,8 @@ export const cloneResultByValue = (
 };
 
 export const convertPatients = (beds: IBed[], rooms: IRoom[]): IPatient[] => {
-  return beds.map(({ name, acuity, room }) => ({
-    id: name,
+  return beds.map(({ id, acuity, room }) => ({
+    id,
     acuity,
     room: rooms.find((listRoom) => listRoom.name === room),
   }));

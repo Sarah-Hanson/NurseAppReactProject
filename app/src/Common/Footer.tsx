@@ -3,7 +3,7 @@ import {Alert, TouchableOpacity, View} from 'react-native';
 import {colors, TextBig, TextSmall} from './common';
 import React from 'react';
 import {useStateValue} from '../StateProvider';
-import {Actions} from './Enums';
+import {Actions, Pages} from './Enums';
 import {
   FENurse,
   FEPreference,
@@ -29,7 +29,7 @@ export const Footer = () => {
     const convertBedToPayload = (bed: IBed): IPatient => ({
       id: formatBedAndRoom(bed),
       acuity: bed.acuity,
-      room: rooms.find((e) => e.beds.includes(bed)),
+      room: rooms.find((e) => e.beds.includes(bed)).name,
     });
     const findNurse = (id: string): Nurse => {
       const FENurse = nurses.find((e) => e.id === id);
@@ -83,9 +83,9 @@ export const Footer = () => {
     };
   };
 
-  const submitList = () => {
+  const submitList = (route = '/schedule') => {
     axios
-      .post('/schedule', generateServerPayload())
+      .post(route, generateServerPayload())
       .then((res) => {
         Alert.alert('Server called, and working on the problem');
         console.warn(res.data);
@@ -103,6 +103,7 @@ export const Footer = () => {
             type: Actions.setResults,
             payload: results,
           });
+          dispatch({type: Actions.changePage, payload: Pages.results});
         } else {
           Alert.alert('Pending Please try again later');
         }
@@ -128,6 +129,16 @@ export const Footer = () => {
         }}
         onPress={() => submitList()}>
         <TextSmall text={'Calculate!'} />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          height: 30,
+          backgroundColor: colors.green,
+          borderRadius: 15,
+          justifyContent: 'center',
+        }}
+        onPress={() => submitList('/echo')}>
+        <TextSmall text={'Echo!'} />
       </TouchableOpacity>
       <TouchableOpacity
         style={{
